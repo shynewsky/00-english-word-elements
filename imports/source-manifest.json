@@ -1,0 +1,38 @@
+{
+  "updatedAt": "2026-10-07",
+  "sources": [
+    {
+      "id": "src-oewn",
+      "version": "2025",
+      "url": "https://en-word.net/static/english-wordnet-2025-json.zip",
+      "format": "ZIP of JSON files",
+      "downloadBytes": 9986555,
+      "license": "CC BY 4.0",
+      "use": ["lemma", "part of speech", "English definitions"]
+    },
+    {
+      "id": "src-kowiktionary",
+      "version": "2026-10-02 extraction",
+      "url": "https://kaikki.org/kowiktionary/raw-wiktextract-data.jsonl.gz",
+      "format": "gzip-compressed JSONL",
+      "downloadBytes": 26869647,
+      "license": "CC BY-SA 4.0 / GFDL",
+      "use": ["Korean glosses for English entries"]
+    },
+    {
+      "id": "src-simplewiktionary",
+      "version": "2026-10-02 extraction",
+      "url": "https://kaikki.org/simplewiktionary/raw-wiktextract-data.jsonl.gz",
+      "format": "gzip-compressed JSONL",
+      "downloadBytes": 4719269,
+      "license": "CC BY-SA 4.0 / GFDL",
+      "use": ["English inflection forms", "supplementary English glosses"]
+    }
+  ],
+  "selection": {
+    "rule": "English single-word entries with the same normalized lemma and part of speech in OEWN and Korean Wiktionary",
+    "priority": "Entries also present in Simple English Wiktionary, then lowercase and shorter lemmas",
+    "limit": 5000,
+    "reviewStatus": "draft"
+  }
+}
