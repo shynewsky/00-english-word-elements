@@ -571,8 +571,8 @@ function renderRoute() {
 
 async function load() {
   try {
-    const catalogUrl = new URL('data/catalog.json', document.baseURI);
-    const importedUrl = new URL('data/imported-words.json', document.baseURI);
+    const catalogUrl = new URL('data/catalog.json?v=0.3.0', document.baseURI);
+    const importedUrl = new URL('data/imported-words.json?v=0.3.0', document.baseURI);
     const [catalogResponse, importedResponse] = await Promise.all([fetch(catalogUrl), fetch(importedUrl)]);
     if (!catalogResponse.ok) throw new Error(`catalog HTTP ${catalogResponse.status}`);
     if (!importedResponse.ok) throw new Error(`imported words HTTP ${importedResponse.status}`);
