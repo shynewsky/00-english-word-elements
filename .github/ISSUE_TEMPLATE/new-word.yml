@@ -1,0 +1,43 @@
+name: Suggest a word
+about: Propose a word and its word-element analysis
+title: "[Word] "
+labels: [data, needs-review]
+body:
+  - type: input
+    id: word
+    attributes:
+      label: Word or lemma
+    validations:
+      required: true
+  - type: input
+    id: meaning
+    attributes:
+      label: Korean meaning
+    validations:
+      required: true
+  - type: textarea
+    id: analysis
+    attributes:
+      label: Proposed decomposition
+      description: Include the ordered elements and the meaning used by each element.
+      placeholder: "un- (not) + believe + -able (capable of)"
+  - type: textarea
+    id: forms
+    attributes:
+      label: Inflected or spelling forms
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: Add dictionary or etymology links. AI output is not a source.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I separated inflected forms from derived words.
+          required: true
+        - label: I provided at least one non-AI source.
+          required: true

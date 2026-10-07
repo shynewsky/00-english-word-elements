@@ -1,0 +1,45 @@
+name: Report a data correction
+about: Report an incorrect meaning, relation, form or decomposition
+title: "[Correction] "
+labels: [data, correction]
+body:
+  - type: input
+    id: entry
+    attributes:
+      label: Entry
+      placeholder: unbelievable or in-
+    validations:
+      required: true
+  - type: dropdown
+    id: field
+    attributes:
+      label: What needs correction?
+      options:
+        - Meaning
+        - Word form
+        - Decomposition
+        - Element sense
+        - Etymology
+        - Source or license
+        - Search behavior
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current problem
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed correction
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Supporting sources
+    validations:
+      required: true
