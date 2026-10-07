@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Search English words, prefixes, suffixes, Greek roots and Latin roots by form or meaning.">
+  <meta name="theme-color" content="#17221d">
+  <title>English Word Elements</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#app">본문으로 바로가기</a>
+  <header class="site-header">
+    <a class="brand" href="#/search" aria-label="English Word Elements 홈">
+      <span class="brand-mark" aria-hidden="true">WE</span>
+      <span>
+        <strong>English Word Elements</strong>
+        <small>Roots, affixes and word families</small>
+      </span>
+    </a>
+    <nav aria-label="주요 메뉴">
+      <a href="#/search">검색</a>
+      <a href="https://github.com/shynewsky/00-english-word-elements">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="app" tabindex="-1">
+    <section class="loading-panel" aria-live="polite">
+      <p class="eyebrow">Loading</p>
+      <h1>단어 데이터베이스를 불러오는 중입니다.</h1>
+    </section>
+  </main>
+
+  <footer>
+    <p>검수된 공개 자료와 교육용 형태 분석을 바탕으로 만든 오픈 데이터 프로젝트입니다.</p>
+    <p><a href="https://github.com/shynewsky/00-english-word-elements/blob/main/ATTRIBUTION.md">Data attribution</a></p>
+  </footer>
+</body>
+</html>

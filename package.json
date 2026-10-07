@@ -1,0 +1,13 @@
+{
+  "name": "00-english-word-elements",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate-data.mjs",
+    "build": "node scripts/validate-data.mjs && node scripts/prepare-pages.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
