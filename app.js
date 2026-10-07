@@ -23,6 +23,7 @@ const POS_LABELS = Object.freeze({
 
 const FORM_LABELS = Object.freeze({
   'base-form': '기본형',
+  singular: '단수형',
   'third-person': '3인칭 단수 현재',
   past: '과거형',
   'past-participle': '과거분사',
@@ -331,6 +332,62 @@ function verbPrincipalParts(word) {
   return [word.lemma, past.form, participle.form];
 }
 
+function wordFormGroups(word) {
+  const groups = [];
+  const usedTypes = new Set();
+  const forms = word.forms || [];
+  const byTypes = (types) => forms.filter((form) => types.includes(form.type));
+
+  if (word.partOfSpeech.includes('noun')) {
+    const numberForms = byTypes(['plural']);
+    if (numberForms.length) {
+      usedTypes.add('plural');
+      groups.push({
+        title: '단수·복수형',
+        description: '명사의 수에 따른 형태',
+        entries: [{ form: word.lemma, type: 'singular' }, ...numberForms],
+      });
+    }
+  }
+
+  if (word.partOfSpeech.includes('verb')) {
+    const tenseForms = byTypes(['third-person', 'past']);
+    if (tenseForms.length) {
+      tenseForms.forEach((form) => usedTypes.add(form.type));
+      groups.push({
+        title: '시제형',
+        description: '기본형과 현재·과거 시제 형태',
+        entries: [{ form: word.lemma, type: 'base-form' }, ...tenseForms],
+      });
+    }
+    const participles = byTypes(['past-participle', 'present-participle']);
+    if (participles.length) {
+      participles.forEach((form) => usedTypes.add(form.type));
+      groups.push({
+        title: '분사형',
+        description: '완료·수동 및 진행에 쓰이는 형태',
+        entries: participles,
+      });
+    }
+  }
+
+  if (word.partOfSpeech.some((pos) => pos === 'adjective' || pos === 'adverb')) {
+    const degrees = byTypes(['comparative', 'superlative']);
+    if (degrees.length) {
+      degrees.forEach((form) => usedTypes.add(form.type));
+      groups.push({
+        title: '비교 형태',
+        description: '원급·비교급·최상급',
+        entries: [{ form: word.lemma, type: 'base-form' }, ...degrees],
+      });
+    }
+  }
+
+  const remaining = forms.filter((form) => !usedTypes.has(form.type));
+  if (remaining.length) groups.push({ title: '기타 형태', description: '그 밖의 문법적·철자 형태', entries: remaining });
+  return groups;
+}
+
 function categoryChangeText(fromWord, toWord) {
   const from = fromWord.partOfSpeech.map(posLabel).join('·');
   const to = toWord.partOfSpeech.map(posLabel).join('·');
@@ -375,7 +432,8 @@ function renderWord(route) {
   const matchedForm = from && normalize(from) !== normalize(word.lemma) && word.forms.find((form) => normalize(form.form) === normalize(from));
   const family = wordFamily(word);
   const principalParts = verbPrincipalParts(word);
-  const formRows = [{ form: word.lemma, type: 'base-form' }, ...word.forms];
+  const formGroups = wordFormGroups(word);
+  const formCount = formGroups.reduce((count, group) => count + group.entries.length, 0);
   const usedSenseIds = unique(word.analyses.flatMap((analysis) => analysis.parts.map((part) => part.elementSenseId)));
   const relatedGroups = usedSenseIds.map((senseId) => {
     const sense = senseById(senseId);
@@ -398,14 +456,9 @@ function renderWord(route) {
         <span class="review-status">검수됨</span>
       </header>
       ${matchedForm ? `<p class="from-note"><strong>${escapeHtml(matchedForm.form)}</strong>은 <strong>${escapeHtml(word.lemma)}</strong>의 ${escapeHtml(formLabel(matchedForm.type))}입니다.</p>` : ''}
-      ${principalParts ? `<div class="principal-strip">
-        <span class="principal-heading">동사 변화</span>
-        <span class="principal-line"><strong>${escapeHtml(principalParts[0])}</strong><i>–</i><strong>${escapeHtml(principalParts[1])}</strong><i>–</i><strong>${escapeHtml(principalParts[2])}</strong></span>
-        <span class="principal-caption">기본형 · 과거형 · 과거분사</span>
-      </div>` : ''}
 
       <nav class="entry-nav" aria-label="상세 항목">
-        <button type="button" data-scroll-target="meaning">뜻</button><button type="button" data-scroll-target="forms">활용형</button><button type="button" data-scroll-target="family">단어 가족</button><button type="button" data-scroll-target="structure">단어 구조</button>
+        <button type="button" data-scroll-target="meaning">뜻</button><button type="button" data-scroll-target="forms">형태 변화</button><button type="button" data-scroll-target="family">단어 가족</button><button type="button" data-scroll-target="structure">단어 구조</button>
       </nav>
 
       <section class="entry-section" id="meaning">
@@ -413,24 +466,26 @@ function renderWord(route) {
         <ol class="definition-list">${word.meanings.map((meaning) => `<li><span class="definition-ko">${escapeHtml(meaning.ko.join(', '))}</span><span class="definition-en">${escapeHtml(meaning.en.join('; '))}</span></li>`).join('')}</ol>
       </section>
 
-      <section class="entry-section" id="forms">
-        <div class="section-heading"><h2>활용형과 철자 변화</h2><span>${formRows.length}개 형태</span></div>
-        ${word.forms.length ? `<div class="inflection-grid">${formRows.map((form) => `<a href="#/word/${encodeHash(word.id)}?from=${encodeHash(form.form)}" class="inflection-card"><strong>${escapeHtml(form.form)}</strong><span>${escapeHtml(formLabel(form.type))}</span></a>`).join('')}</div>` : '<p class="muted">별도로 등록된 활용형이 없습니다.</p>'}
+      <section class="entry-section forms-section" id="forms">
+        <div class="section-heading"><h2>형태 변화</h2><span>${formCount}개 형태</span></div>
+        ${principalParts ? `<div class="principal-strip">
+          <span class="principal-heading">주요 동사 변화</span>
+          <span class="principal-line"><strong>${escapeHtml(principalParts[0])}</strong><i>–</i><strong>${escapeHtml(principalParts[1])}</strong><i>–</i><strong>${escapeHtml(principalParts[2])}</strong></span>
+          <span class="principal-caption">기본형 · 과거형 · 과거분사</span>
+        </div>` : ''}
+        ${formGroups.length ? `<div class="form-groups">${formGroups.map((group) => `<div class="form-group">
+          <div class="form-group-heading"><h3>${escapeHtml(group.title)}</h3><span>${escapeHtml(group.description)}</span></div>
+          <div class="inflection-grid">${group.entries.map((form) => `<a href="#/word/${encodeHash(word.id)}?from=${encodeHash(form.form)}" class="inflection-card"><strong>${escapeHtml(form.form)}</strong><span>${escapeHtml(formLabel(form.type))}</span></a>`).join('')}</div>
+        </div>`).join('')}</div>` : '<p class="muted">별도로 등록된 형태 변화가 없습니다.</p>'}
       </section>
 
       <section class="entry-section" id="family">
-        <div class="section-heading"><h2>단어 가족</h2><span>활용과 파생을 구분해 표시합니다</span></div>
-        <div class="family-group">
-          <h3>활용형 <small>같은 단어의 문법적 형태</small></h3>
-          <div class="family-flow">${formRows.map((form) => `<a href="#/word/${encodeHash(word.id)}?from=${encodeHash(form.form)}"><strong>${escapeHtml(form.form)}</strong><span>${escapeHtml(formLabel(form.type))}</span></a>`).join('')}</div>
-        </div>
-        <div class="family-group">
-          <h3>파생어 <small>접사가 붙거나 품사가 달라진 새 단어</small></h3>
-          <div class="family-relations">
-            ${family.parents.map(({ word: parent, relation }) => familyRelationCard(parent, word, relation, parent)).join('')}
-            ${family.children.map(({ word: child, relation }) => familyRelationCard(word, child, relation, child)).join('')}
-            ${!family.parents.length && !family.children.length ? '<p class="muted">등록된 직접 파생 관계가 없습니다.</p>' : ''}
-          </div>
+        <div class="section-heading"><h2>단어 가족</h2><span>파생 관계만 표시합니다</span></div>
+        <p class="section-description">접사가 붙거나 품사가 달라져 만들어진 새 단어입니다.</p>
+        <div class="family-relations">
+          ${family.parents.map(({ word: parent, relation }) => familyRelationCard(parent, word, relation, parent)).join('')}
+          ${family.children.map(({ word: child, relation }) => familyRelationCard(word, child, relation, child)).join('')}
+          ${!family.parents.length && !family.children.length ? '<p class="muted">등록된 직접 파생 관계가 없습니다.</p>' : ''}
         </div>
       </section>
 
