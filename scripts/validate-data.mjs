@@ -1,0 +1,133 @@
+import { readFile } from 'node:fs/promises';
+
+const fileUrl = new URL('../data/catalog.json', import.meta.url);
+const data = JSON.parse(await readFile(fileUrl, 'utf8'));
+const errors = [];
+const warnings = [];
+const fail = (message) => errors.push(message);
+const warn = (message) => warnings.push(message);
+const idPattern = /^[a-z][a-z0-9]*(?:[-._][a-z0-9]+)*$/;
+const statuses = new Set(['draft', 'reviewed', 'published']);
+const ids = new Map();
+
+function register(id, type) {
+  if (!idPattern.test(id)) fail(`${type} has an invalid id: ${id}`);
+  if (ids.has(id)) fail(`Duplicate id ${id} (${ids.get(id)} and ${type})`);
+  ids.set(id, type);
+}
+
+for (const source of data.sources) register(source.id, 'source');
+for (const concept of data.concepts) register(concept.id, 'concept');
+for (const element of data.elements) {
+  register(element.id, 'element');
+  for (const sense of element.senses) register(sense.id, 'element-sense');
+}
+for (const word of data.words) {
+  register(word.id, 'word');
+  for (const sense of word.meanings) register(sense.id, 'word-sense');
+  for (const analysis of word.analyses) register(analysis.id, 'analysis');
+}
+
+const sourceIds = new Set(data.sources.map((item) => item.id));
+const conceptIds = new Set(data.concepts.map((item) => item.id));
+const wordIds = new Set(data.words.map((item) => item.id));
+const wordSenseIds = new Set(data.words.flatMap((word) => word.meanings.map((sense) => sense.id)));
+const elementSenseToElement = new Map();
+
+for (const concept of data.concepts) {
+  if (!concept.labels?.ko?.length || !concept.labels?.en?.length) fail(`Concept ${concept.id} needs Korean and English labels`);
+}
+
+for (const element of data.elements) {
+  if (!statuses.has(element.status)) fail(`Element ${element.id} has invalid status ${element.status}`);
+  if (!element.canonicalForm || !element.kind || !element.originLanguage) fail(`Element ${element.id} is missing core fields`);
+  if (!element.allomorphs?.length) fail(`Element ${element.id} has no allomorphs`);
+  if (!element.senses?.length) fail(`Element ${element.id} has no senses`);
+  for (const sense of element.senses) {
+    elementSenseToElement.set(sense.id, element.id);
+    if (!sense.glossKo?.length || !sense.glossEn?.length) fail(`Element sense ${sense.id} needs bilingual glosses`);
+    for (const conceptId of sense.concepts || []) if (!conceptIds.has(conceptId)) fail(`${sense.id} references missing concept ${conceptId}`);
+    for (const sourceId of sense.sources || []) if (!sourceIds.has(sourceId)) fail(`${sense.id} references missing source ${sourceId}`);
+    if (element.status !== 'draft' && !(sense.sources || []).length) fail(`Reviewed element sense ${sense.id} needs a source`);
+  }
+}
+
+const lemmaPosKeys = new Set();
+const formIndex = new Map();
+for (const word of data.words) {
+  if (!statuses.has(word.status)) fail(`Word ${word.id} has invalid status ${word.status}`);
+  if (!word.lemma || !word.partOfSpeech?.length || !word.meanings?.length) fail(`Word ${word.id} is missing core fields`);
+  const lemmaPosKey = `${word.lemma.toLocaleLowerCase('en')}|${[...word.partOfSpeech].sort().join(',')}`;
+  if (lemmaPosKeys.has(lemmaPosKey)) warn(`Possible duplicate lemma/POS record: ${lemmaPosKey}`);
+  lemmaPosKeys.add(lemmaPosKey);
+  for (const sourceId of word.sources || []) if (!sourceIds.has(sourceId)) fail(`${word.id} references missing source ${sourceId}`);
+  if (word.status !== 'draft' && !(word.sources || []).length) fail(`Reviewed word ${word.id} needs a source`);
+
+  for (const meaning of word.meanings) {
+    if (!meaning.ko?.length || !meaning.en?.length) fail(`Word sense ${meaning.id} needs bilingual glosses`);
+    for (const conceptId of meaning.concepts || []) if (!conceptIds.has(conceptId)) fail(`${meaning.id} references missing concept ${conceptId}`);
+  }
+
+  for (const form of word.forms || []) {
+    const key = form.form.normalize('NFKC').toLocaleLowerCase('en');
+    if (!formIndex.has(key)) formIndex.set(key, []);
+    formIndex.get(key).push(word.id);
+  }
+
+  for (const relation of word.relations || []) {
+    if (!wordIds.has(relation.targetWordId)) fail(`${word.id} references missing related word ${relation.targetWordId}`);
+    if (relation.targetWordId === word.id) fail(`${word.id} has a self relation`);
+    if (relation.type === 'inflection') fail(`${word.id} models an inflection as a relation; use forms instead`);
+  }
+
+  for (const analysis of word.analyses || []) {
+    if (!wordSenseIds.has(analysis.wordSenseId)) fail(`${analysis.id} references missing word sense ${analysis.wordSenseId}`);
+    if (!word.meanings.some((sense) => sense.id === analysis.wordSenseId)) fail(`${analysis.id} targets a sense outside ${word.id}`);
+    if (!analysis.parts?.length) fail(`${analysis.id} has no parts`);
+    const orders = analysis.parts.map((part) => part.order);
+    const expected = analysis.parts.map((_, index) => index + 1);
+    if (JSON.stringify(orders) !== JSON.stringify(expected)) fail(`${analysis.id} part order must be 1..n`);
+    for (const part of analysis.parts) {
+      const referenceCount = Number(Boolean(part.elementSenseId)) + Number(Boolean(part.wordId));
+      if (referenceCount !== 1) fail(`${analysis.id} part ${part.order} must reference exactly one element sense or word`);
+      if (part.elementSenseId && !elementSenseToElement.has(part.elementSenseId)) fail(`${analysis.id} references missing element sense ${part.elementSenseId}`);
+      if (part.wordId && !wordIds.has(part.wordId)) fail(`${analysis.id} references missing base word ${part.wordId}`);
+      if (part.parentOrder !== null && part.parentOrder !== undefined && !orders.includes(part.parentOrder)) fail(`${analysis.id} part ${part.order} has missing parent ${part.parentOrder}`);
+      if (!part.surface) fail(`${analysis.id} part ${part.order} has no surface text`);
+    }
+    const combined = analysis.parts.map((part) => part.surface).join('').normalize('NFKC').toLocaleLowerCase('en').replaceAll('-', '');
+    const lemma = word.lemma.normalize('NFKC').toLocaleLowerCase('en').replaceAll('-', '');
+    if (combined !== lemma) fail(`${analysis.id} surfaces produce '${combined}', expected '${lemma}'`);
+  }
+}
+
+const graph = new Map(data.words.map((word) => [word.id, (word.relations || []).filter((rel) => rel.type === 'derived-from').map((rel) => rel.targetWordId)]));
+const visiting = new Set();
+const visited = new Set();
+function visit(node) {
+  if (visiting.has(node)) return fail(`Derivation cycle detected at ${node}`);
+  if (visited.has(node)) return;
+  visiting.add(node);
+  for (const parent of graph.get(node) || []) visit(parent);
+  visiting.delete(node);
+  visited.add(node);
+}
+for (const wordId of wordIds) visit(wordId);
+
+for (const element of data.elements) {
+  for (const sense of element.senses) {
+    const count = data.words.filter((word) => word.analyses.some((analysis) => analysis.parts.some((part) => part.elementSenseId === sense.id))).length;
+    if (!count) warn(`Element sense ${sense.id} has no example word`);
+  }
+}
+
+if (warnings.length) {
+  console.warn(`Warnings (${warnings.length}):`);
+  for (const message of warnings) console.warn(`- ${message}`);
+}
+if (errors.length) {
+  console.error(`Validation failed (${errors.length} errors):`);
+  for (const message of errors) console.error(`- ${message}`);
+  process.exit(1);
+}
+console.log(`Validated ${data.words.length} words, ${data.elements.length} elements, ${elementSenseToElement.size} element senses, ${data.concepts.length} concepts and ${data.sources.length} sources.`);
