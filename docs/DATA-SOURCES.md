@@ -4,7 +4,7 @@
 
 1. Prefer official downloads, dumps and structured APIs.
 2. Do not use HTML scraping as the primary collection method.
-3. Never publish imported records without human review.
+3. Never present automatically imported records as human-reviewed; keep them visibly marked as `draft` until editorial review.
 4. Keep stable source IDs, access dates and license information.
 5. Do not commit multi-gigabyte raw dumps to Git.
 6. AI output may assist drafting but is never a source.
@@ -28,20 +28,20 @@ Use Wiktextract or Kaikki JSONL rather than scraping rendered HTML. Wiktionary s
 
 ## Korean glosses
 
-Korean glosses are concise editorial explanations based on cited English-language sources. Korean Wiktionary may be consulted as a secondary source. ChatGPT or Claude may draft a translation, but a human must compare it with the cited source before publication.
+Reviewed Korean glosses are concise editorial explanations based on cited English-language sources. The expanded draft lexicon uses Korean Wiktionary entries extracted by Wiktextract as source-linked staging data. Automatically collected entries are labelled `자동 수집` in the interface and are not treated as reviewed morphological analyses.
 
-## Planned import workflow
+## Implemented import workflow
 
 ```text
-imports/seed-words.txt
-        ↓ manual GitHub Action
-versioned external data download
+OEWN 2025 JSON + Korean Wiktionary JSONL + Simple Wiktionary JSONL
+        ↓ scripts/import-lexicon.mjs
+normalize lemma + part of speech and intersect sources
         ↓
-small staging JSON for selected entries
+select 5,000 source-linked entries
         ↓
-pull request and human review
-        ↓
-data/catalog.json
+data/imported-words.json
+        ↓ npm run validate
+GitHub pull request and Pages deployment
 ```
 
-The import workflow must never commit raw full dumps. It should record source version and date in catalog metadata or a future `source-manifest.json`.
+The monthly `Refresh public lexicon data` workflow downloads about 45 MB of compressed source data, never commits raw dumps, regenerates only the compact imported output, validates all IDs and relationships, and opens a pull request for review. Exact source URLs, versions, sizes and selection rules are recorded in `imports/source-manifest.json`.

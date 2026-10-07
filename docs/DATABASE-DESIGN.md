@@ -2,14 +2,15 @@
 
 ## 1. Physical storage decision
 
-The initial project uses `data/catalog.json` as the canonical database.
+The project uses two mergeable static JSON layers.
 
+- `data/catalog.json` is the canonical human-reviewed catalog for words, elements, concepts and sources.
+- `data/imported-words.json` is a reproducible, source-linked draft lexicon generated from public dumps.
 - PostgreSQL is not used because GitHub Pages has no server process.
 - SQLite is not canonical because binary database files are difficult to diff and merge in Git.
-- A temporary SQLite database may be generated in CI later if large-scale aggregation becomes necessary.
-- The browser reads static JSON and performs search locally.
+- The browser merges both files and performs search locally.
 
-The catalog can later be split into one file per entity without changing IDs or relationships.
+At 5,000 imported words the combined payload remains practical. The catalog can later be sharded without changing IDs or relationships.
 
 ## 2. Logical relationship model
 
@@ -213,7 +214,7 @@ query → Concept labels / Word-sense glosses / Element-sense glosses
 
 ## 6. Search indexes
 
-The current sample is small enough to search directly in memory. When the catalog grows, CI should generate:
+The current 5,000-word expansion is still small enough to search directly in memory. When the catalog grows past roughly 10,000 entries, CI should generate:
 
 ```text
 form-to-word.json
