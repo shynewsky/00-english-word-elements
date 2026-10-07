@@ -1,7 +1,10 @@
 import { readFile } from 'node:fs/promises';
 
-const fileUrl = new URL('../data/catalog.json', import.meta.url);
-const data = JSON.parse(await readFile(fileUrl, 'utf8'));
+const catalogUrl = new URL('../data/catalog.json', import.meta.url);
+const importedUrl = new URL('../data/imported-words.json', import.meta.url);
+const catalog = JSON.parse(await readFile(catalogUrl, 'utf8'));
+const imported = JSON.parse(await readFile(importedUrl, 'utf8'));
+const data = { ...catalog, words: [...catalog.words, ...imported.words] };
 const errors = [];
 const warnings = [];
 const fail = (message) => errors.push(message);
@@ -9,6 +12,7 @@ const warn = (message) => warnings.push(message);
 const idPattern = /^[a-z][a-z0-9]*(?:[-._][a-z0-9]+)*$/;
 const statuses = new Set(['draft', 'reviewed', 'published']);
 const ids = new Map();
+if (imported.meta.wordCount !== imported.words.length) fail(`Imported metadata says ${imported.meta.wordCount} words, found ${imported.words.length}`);
 
 function register(id, type) {
   if (!idPattern.test(id)) fail(`${type} has an invalid id: ${id}`);
@@ -130,4 +134,4 @@ if (errors.length) {
   for (const message of errors) console.error(`- ${message}`);
   process.exit(1);
 }
-console.log(`Validated ${data.words.length} words, ${data.elements.length} elements, ${elementSenseToElement.size} element senses, ${data.concepts.length} concepts and ${data.sources.length} sources.`);
+console.log(`Validated ${data.words.length} words (${catalog.words.length} curated + ${imported.words.length} imported), ${data.elements.length} elements, ${elementSenseToElement.size} element senses, ${data.concepts.length} concepts and ${data.sources.length} sources.`);
