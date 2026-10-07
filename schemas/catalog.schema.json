@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shynewsky.github.io/00-english-word-elements/schemas/catalog.schema.json",
+  "title": "English Word Elements catalog",
+  "type": "object",
+  "required": ["meta", "sources", "concepts", "elements", "words"],
+  "properties": {
+    "meta": { "type": "object", "required": ["project", "schemaVersion", "dataVersion"] },
+    "sources": { "type": "array", "items": { "$ref": "#/$defs/source" } },
+    "concepts": { "type": "array", "items": { "$ref": "#/$defs/concept" } },
+    "elements": { "type": "array", "items": { "$ref": "#/$defs/element" } },
+    "words": { "type": "array", "items": { "$ref": "#/$defs/word" } }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:[-._][a-z0-9]+)*$" },
+    "status": { "enum": ["draft", "reviewed", "published"] },
+    "source": {
+      "type": "object",
+      "required": ["id", "name", "url", "license", "role"],
+      "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string" }, "url": { "type": "string", "format": "uri" }, "license": { "type": "string" }, "role": { "type": "string" } },
+      "additionalProperties": false
+    },
+    "concept": {
+      "type": "object",
+      "required": ["id", "labels", "descriptionKo"],
+      "properties": { "id": { "$ref": "#/$defs/id" }, "labels": { "type": "object", "required": ["ko", "en"] }, "descriptionKo": { "type": "string" } },
+      "additionalProperties": false
+    },
+    "element": {
+      "type": "object",
+      "required": ["id", "canonicalForm", "kind", "originLanguage", "bound", "allomorphs", "senses", "status"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" }, "canonicalForm": { "type": "string" },
+        "kind": { "enum": ["prefix", "suffix", "root", "combining-form", "infix", "circumfix"] },
+        "originLanguage": { "type": "string" }, "bound": { "type": "boolean" },
+        "allomorphs": { "type": "array", "minItems": 1 }, "senses": { "type": "array", "minItems": 1 }, "status": { "$ref": "#/$defs/status" }
+      },
+      "additionalProperties": false
+    },
+    "word": {
+      "type": "object",
+      "required": ["id", "lemma", "partOfSpeech", "status", "meanings", "forms", "relations", "analyses", "sources"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" }, "lemma": { "type": "string" }, "partOfSpeech": { "type": "array", "minItems": 1 },
+        "status": { "$ref": "#/$defs/status" }, "meanings": { "type": "array", "minItems": 1 },
+        "forms": { "type": "array" }, "relations": { "type": "array" }, "analyses": { "type": "array" },
+        "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" } }
+      },
+      "additionalProperties": false
+    }
+  }
+}
