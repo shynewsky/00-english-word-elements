@@ -1,0 +1,72 @@
+name: Refresh public lexicon data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 1 * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Download versioned public data
+        run: |
+          mkdir -p .source/oewn
+          curl --fail --location --retry 3 \
+            https://en-word.net/static/english-wordnet-2025-json.zip \
+            --output .source/oewn.zip
+          curl --fail --location --retry 3 \
+            https://kaikki.org/kowiktionary/raw-wiktextract-data.jsonl.gz \
+            --output .source/kowiktionary.jsonl.gz
+          curl --fail --location --retry 3 \
+            https://kaikki.org/simplewiktionary/raw-wiktextract-data.jsonl.gz \
+            --output .source/simplewiktionary.jsonl.gz
+          unzip -q .source/oewn.zip -d .source/oewn
+          gzip -dc .source/kowiktionary.jsonl.gz > .source/kowiktionary.jsonl
+          gzip -dc .source/simplewiktionary.jsonl.gz > .source/simplewiktionary.jsonl
+
+      - name: Generate imported dictionary
+        run: |
+          previous_date="$(node -e "const fs=require('fs'); console.log(JSON.parse(fs.readFileSync('data/imported-words.json','utf8')).meta.generatedAt)")"
+          node scripts/import-lexicon.mjs \
+            --oewn-dir .source/oewn \
+            --ko-wiktionary .source/kowiktionary.jsonl \
+            --simple-wiktionary .source/simplewiktionary.jsonl \
+            --output data/imported-words.json \
+            --limit 5000 \
+            --generated-at "$previous_date"
+
+      - name: Validate generated data
+        run: npm run validate
+
+      - name: Open a review pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- data/imported-words.json; then
+            echo "No source changes detected."
+            exit 0
+          fi
+          node -e "const fs=require('fs'); const p='data/imported-words.json'; const d=JSON.parse(fs.readFileSync(p,'utf8')); d.meta.generatedAt=new Date().toISOString().slice(0,10); fs.writeFileSync(p, JSON.stringify(d,null,2)+'\\n')"
+          branch="automation/refresh-lexicon-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add data/imported-words.json
+          git commit -m "Refresh public lexicon data"
+          git push --set-upstream origin "$branch"
+          gh pr create \
+            --title "Refresh public lexicon data" \
+            --body "Automated refresh from OEWN 2025, Korean Wiktionary and Simple English Wiktionary structured dumps. Validation completed in this workflow." \
+            --base main \
+            --head "$branch"
