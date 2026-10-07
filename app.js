@@ -71,13 +71,17 @@ function initMaps(data) {
 function scoreText(query, value, weights) {
   const q = normalize(query);
   const v = normalize(value);
-  const qLoose = loose(query);
-  const vLoose = loose(value);
   if (!q || !v) return 0;
   if (v === q) return weights.exact;
-  if (vLoose && vLoose === qLoose) return weights.looseExact ?? weights.exact - 2;
-  if (v.startsWith(q) || vLoose.startsWith(qLoose)) return weights.prefix;
-  if (v.includes(q) || vLoose.includes(qLoose)) return weights.includes;
+  if (weights.useLoose) {
+    const qLoose = loose(query);
+    const vLoose = loose(value);
+    if (vLoose && vLoose === qLoose) return weights.looseExact ?? weights.exact - 2;
+    if (vLoose.startsWith(qLoose)) return weights.prefix;
+    if (vLoose.includes(qLoose)) return weights.includes;
+  }
+  if (v.startsWith(q)) return weights.prefix;
+  if (v.includes(q)) return weights.includes;
   return 0;
 }
 
@@ -112,9 +116,9 @@ function bestElementMatch(element, query, mode) {
   };
 
   if (mode !== 'meaning') {
-    consider(scoreText(query, element.canonicalForm, { exact: 122, looseExact: 120, prefix: 90, includes: 64 }), '형태소 대표형 일치');
+    consider(scoreText(query, element.canonicalForm, { exact: 122, looseExact: 120, prefix: 90, includes: 64, useLoose: true }), '형태소 대표형 일치');
     for (const allomorph of element.allomorphs) {
-      consider(scoreText(query, allomorph.form, { exact: 118, looseExact: 116, prefix: 88, includes: 62 }), `이형태 ${allomorph.form}와 일치`);
+      consider(scoreText(query, allomorph.form, { exact: 118, looseExact: 116, prefix: 88, includes: 62, useLoose: true }), `이형태 ${allomorph.form}와 일치`);
     }
   }
 
