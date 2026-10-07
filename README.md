@@ -9,8 +9,10 @@ https://shynewsky.github.io/00-english-word-elements/
 ## What it does
 
 - Resolves inflected forms such as `running` to the lemma `run`
+- Shows verb principal parts such as `run–ran–run`
 - Shows clickable word decompositions
-- Separates inflectional forms from derived word-family relations
+- Separates inflectional forms from derived word-family relations such as `run → runner`
+- Labels category-changing derivations such as `available` (adjective) → `availability` (noun)
 - Searches canonical morphemes and allomorphs such as `in-`, `im-`, `il-`, `ir-`
 - Groups example words by the exact sense of a word element
 - Searches Korean and English meanings
