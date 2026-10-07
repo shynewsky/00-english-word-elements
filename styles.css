@@ -102,6 +102,8 @@ main { min-height: calc(100vh - 150px); }
 .entry-title-line h1 { margin: 0; font-size: clamp(2.6rem, 7vw, 4.5rem); line-height: 1; letter-spacing: -.045em; }
 .entry-summary { margin: .75rem 0 0; color: #424950; font-size: 1.05rem; }
 .review-status { align-self: start; padding: .26rem .52rem; border-radius: 4px; background: #f1f3f5; color: var(--muted); font-size: .72rem; font-weight: 800; }
+.review-status.auto { background: #fff2cc; color: #735c0f; }
+.import-note { margin: 0; padding: 12px 34px; border-top: 1px solid #f1dfa5; border-bottom: 1px solid #f1dfa5; background: #fffae8; color: #67551e; font-size: .8rem; }
 .from-note { margin: 0 34px 18px; padding: 11px 13px; border-left: 3px solid var(--green); background: var(--green-pale); color: #365c74; }
 .principal-strip { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 22px; margin: 0 0 22px; padding: 18px 20px; border: 1px solid #c7e1f2; background: #f2f8fc; }
 .principal-heading { color: var(--green-dark); font-size: .8rem; font-weight: 900; }
@@ -190,6 +192,7 @@ footer p { margin: 0; }
   .search-help-grid { grid-template-columns: 1fr; }
   .search-help-grid button { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
   .entry-header, .entry-section { padding: 24px 18px; }
+  .import-note { padding-right: 18px; padding-left: 18px; }
   .from-note { margin-right: 18px; margin-left: 18px; }
   .principal-strip { grid-template-columns: 1fr; gap: 8px; text-align: center; }
   .principal-line { justify-content: center; }

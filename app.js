@@ -241,6 +241,8 @@ function renderSearch(route) {
   const results = search(query, mode, kind);
   const kindOptions = ['all', 'prefix', 'suffix', 'root', 'combining-form'];
   const examples = ['running', 'availability', 'in-', '쓰다', 'life'];
+  const reviewedWordCount = state.data.words.filter((word) => word.status !== 'draft').length;
+  const importedWordCount = state.data.words.length - reviewedWordCount;
 
   app.innerHTML = `<div class="page search-page">
     <section class="dictionary-masthead">
@@ -256,7 +258,7 @@ function renderSearch(route) {
         <span>추천 검색</span>
         ${examples.map((example) => `<button type="button" data-query="${escapeHtml(example)}">${escapeHtml(example)}</button>`).join('')}
       </div>
-      <div class="sample-banner"><strong>현재 MVP 샘플</strong><span>${state.data.words.length}개 단어 · ${state.data.elements.length}개 형태소가 등록되어 있습니다. 등록된 항목만 검색됩니다.</span></div>
+      <div class="sample-banner"><strong>확장 사전 데이터</strong><span>${state.data.words.length.toLocaleString('ko-KR')}개 단어 · ${state.data.elements.length}개 형태소 · 검수 ${reviewedWordCount.toLocaleString('ko-KR')}개 · 자동 수집 ${importedWordCount.toLocaleString('ko-KR')}개</span></div>
     </section>
 
     <section class="search-results-panel" aria-label="검색 결과">
@@ -272,7 +274,7 @@ function renderSearch(route) {
       </div>
       <p class="result-status" aria-live="polite">${query ? `<strong>‘${escapeHtml(query)}’</strong> 검색 결과 <b>${results.length}</b>개` : '검색어를 입력하거나 아래 사용 예시를 선택하세요.'}</p>
       <div class="results-list">
-        ${query && results.length ? results.map((result) => resultCard(result, query)).join('') : query ? `<div class="empty-state"><strong>‘${escapeHtml(query)}’은 현재 샘플 데이터에 없습니다.</strong><span>추천 검색어를 선택하거나 GitHub 데이터에 새 단어를 추가할 수 있습니다.</span></div>` : `<div class="search-help-grid">
+        ${query && results.length ? results.map((result) => resultCard(result, query)).join('') : query ? `<div class="empty-state"><strong>‘${escapeHtml(query)}’을 현재 데이터에서 찾지 못했습니다.</strong><span>철자를 확인하거나 GitHub 데이터에 새 단어를 제안할 수 있습니다.</span></div>` : `<div class="search-help-grid">
           <button type="button" data-query="running"><strong>활용형으로 찾기</strong><span>running을 검색하면 사전형 run과 변화형을 확인합니다.</span></button>
           <button type="button" data-query="availability"><strong>파생어 살펴보기</strong><span>available → availability의 품사 변화를 확인합니다.</span></button>
           <button type="button" data-query="in-"><strong>형태소로 모아보기</strong><span>in-, im-, il-, ir-가 쓰인 단어를 의미별로 봅니다.</span></button>
@@ -441,6 +443,7 @@ function renderWord(route) {
     const related = wordsUsingSense(senseId).filter((candidate) => candidate.id !== word.id);
     return { senseId, sense, element, related };
   });
+  const isImported = word.status === 'draft';
 
   app.innerHTML = `<div class="page detail-page">
     ${compactSearch(from || word.lemma)}
@@ -453,8 +456,9 @@ function renderWord(route) {
           <div class="entry-title-line"><h1 tabindex="-1" id="view-title">${escapeHtml(word.lemma)}</h1>${word.partOfSpeech.map((pos) => `<span class="pos-label strong">${escapeHtml(posLabel(pos))}</span>`).join('')}</div>
           <p class="entry-summary">${word.meanings.map((meaning) => escapeHtml(meaning.ko.join(', '))).join(' · ')}</p>
         </div>
-        <span class="review-status">검수됨</span>
+        <span class="review-status${isImported ? ' auto' : ''}">${isImported ? '자동 수집' : '검수됨'}</span>
       </header>
+      ${isImported ? '<p class="import-note">공개 사전 덤프를 표제어와 품사 기준으로 결합한 항목입니다. 형태소 분석과 뜻의 세부 대응은 아직 개별 검수 전입니다.</p>' : ''}
       ${matchedForm ? `<p class="from-note"><strong>${escapeHtml(matchedForm.form)}</strong>은 <strong>${escapeHtml(word.lemma)}</strong>의 ${escapeHtml(formLabel(matchedForm.type))}입니다.</p>` : ''}
 
       <nav class="entry-nav" aria-label="상세 항목">
@@ -567,10 +571,15 @@ function renderRoute() {
 
 async function load() {
   try {
-    const dataUrl = new URL('data/catalog.json', document.baseURI);
-    const response = await fetch(dataUrl);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    initMaps(await response.json());
+    const catalogUrl = new URL('data/catalog.json', document.baseURI);
+    const importedUrl = new URL('data/imported-words.json', document.baseURI);
+    const [catalogResponse, importedResponse] = await Promise.all([fetch(catalogUrl), fetch(importedUrl)]);
+    if (!catalogResponse.ok) throw new Error(`catalog HTTP ${catalogResponse.status}`);
+    if (!importedResponse.ok) throw new Error(`imported words HTTP ${importedResponse.status}`);
+    const [data, imported] = await Promise.all([catalogResponse.json(), importedResponse.json()]);
+    data.words = [...data.words, ...imported.words];
+    data.meta.imported = imported.meta;
+    initMaps(data);
     if (!location.hash) location.hash = '#/search';
     renderRoute();
   } catch (error) {

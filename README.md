@@ -19,14 +19,18 @@ https://shynewsky.github.io/00-english-word-elements/
 - Distinguishes synchronic and etymological analyses
 - Displays source and license information
 
-The initial catalog contains a small reviewed sample used to verify the data model and search experience. It is not yet a comprehensive dictionary.
+Version 0.3 combines 27 curated entries and 16 reviewed word elements with 5,000 automatically collected, source-linked dictionary entries. Imported entries are clearly labelled `자동 수집`; detailed morpheme analyses remain review-only.
 
 ## Architecture
 
 ```text
-GitHub Issues and pull requests
+OEWN and Wiktextract public dumps
              ↓
-data/catalog.json
+scripts/import-lexicon.mjs
+             ↓
+data/imported-words.json
+             +
+data/catalog.json (reviewed editorial data)
              ↓
 scripts/validate-data.mjs
              ↓
@@ -35,19 +39,22 @@ static HTML, CSS and JavaScript
 GitHub Pages
 ```
 
-There is no server database. The canonical database is reviewable JSON in Git. GitHub Actions checks referential integrity and deploys a static artifact.
+There is no server database. Reviewable JSON remains in Git. GitHub Actions validates referential integrity, deploys the static artifact, and can refresh the imported lexicon monthly through a review pull request.
 
 ## Repository structure
 
 ```text
-data/catalog.json              canonical data
-schemas/catalog.schema.json    structural schema
-scripts/validate-data.mjs      semantic and relation validation
-scripts/prepare-pages.mjs      deployment artifact builder
-docs/DATABASE-DESIGN.md        logical database specification
-docs/DATA-SOURCES.md           import and licensing policy
+data/catalog.json              reviewed editorial data
+data/imported-words.json        generated 5,000-word draft lexicon
+imports/source-manifest.json    source versions, sizes and selection rules
+schemas/catalog.schema.json     structural schema
+scripts/import-lexicon.mjs      public dump normalizer and importer
+scripts/validate-data.mjs       semantic and relation validation
+scripts/prepare-pages.mjs       deployment artifact builder
+docs/DATABASE-DESIGN.md         logical database specification
+docs/DATA-SOURCES.md            import and licensing policy
 index.html / app.js / styles.css
-.github/workflows              validation and Pages deployment
+.github/workflows               validation, refresh and Pages deployment
 ```
 
 ## Data entities
@@ -73,6 +80,8 @@ The project has no runtime dependencies. With Node.js 20 or newer:
 npm run validate
 npm run build
 ```
+
+The `Refresh public lexicon data` workflow downloads the configured public dumps, runs `scripts/import-lexicon.mjs`, validates the regenerated data and opens a pull request when records change.
 
 The validator checks:
 
