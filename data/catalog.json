@@ -3,14 +3,14 @@
     "project": "English Word Elements",
     "repository": "00-english-word-elements",
     "schemaVersion": 1,
-    "dataVersion": "0.2.0",
+    "dataVersion": "0.3.0",
     "language": "en",
     "interfaceLanguages": [
       "ko",
       "en"
     ],
     "updatedAt": "2026-10-07",
-    "noticeKo": "현재 데이터는 구조와 검색 기능을 검증하기 위한 초기 검수 샘플입니다."
+    "noticeKo": "검수된 형태소 분석과 공개 덤프에서 자동 수집한 확장 사전 데이터를 함께 제공합니다."
   },
   "sources": [
     {
@@ -26,6 +26,20 @@
       "url": "https://en.wiktionary.org/",
       "license": "CC BY-SA 4.0 / GFDL",
       "role": "etymology, forms, affixes and derived terms"
+    },
+    {
+      "id": "src-kowiktionary",
+      "name": "Korean Wiktionary via Wiktextract",
+      "url": "https://kaikki.org/kowiktionary/rawdata.html",
+      "license": "CC BY-SA 4.0 / GFDL",
+      "role": "Korean glosses for English entries"
+    },
+    {
+      "id": "src-simplewiktionary",
+      "name": "Simple English Wiktionary via Wiktextract",
+      "url": "https://kaikki.org/simplewiktionary/rawdata.html",
+      "license": "CC BY-SA 4.0 / GFDL",
+      "role": "English inflection forms and supplementary glosses"
     },
     {
       "id": "src-editorial",
