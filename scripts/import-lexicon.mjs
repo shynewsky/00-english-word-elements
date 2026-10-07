@@ -147,7 +147,15 @@ for (const [key, oewnItem] of oewn) {
   const simpleItem = simple.get(key);
   const lowercase = oewnItem.lemma === oewnItem.lemma.toLocaleLowerCase('en');
   const score = (simpleItem ? 1000 : 0) + (lowercase ? 100 : 0) + Math.max(0, 40 - oewnItem.lemma.length) + koItem.ko.length;
-  candidates.push({ key, ...oewnItem, ko: koItem.ko, forms: simpleItem?.forms || [], hasSimple: Boolean(simpleItem), score });
+  candidates.push({
+    key,
+    ...oewnItem,
+    ko: koItem.ko,
+    en: simpleItem?.en?.length ? simpleItem.en : oewnItem.en,
+    forms: simpleItem?.forms || [],
+    hasSimple: Boolean(simpleItem),
+    score,
+  });
 }
 
 candidates.sort((left, right) => right.score - left.score || left.lemma.localeCompare(right.lemma, 'en') || left.pos.localeCompare(right.pos));
