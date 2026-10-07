@@ -1,0 +1,2424 @@
+{
+  "meta": {
+    "project": "English Word Elements",
+    "repository": "00-english-word-elements",
+    "schemaVersion": 1,
+    "dataVersion": "0.1.0",
+    "language": "en",
+    "interfaceLanguages": [
+      "ko",
+      "en"
+    ],
+    "updatedAt": "2026-10-07",
+    "noticeKo": "현재 데이터는 구조와 검색 기능을 검증하기 위한 초기 검수 샘플입니다."
+  },
+  "sources": [
+    {
+      "id": "src-oewn",
+      "name": "Open English WordNet",
+      "url": "https://en-word.net/",
+      "license": "CC BY 4.0",
+      "role": "lemma, part of speech, English gloss and lexical relations"
+    },
+    {
+      "id": "src-wiktionary",
+      "name": "English Wiktionary",
+      "url": "https://en.wiktionary.org/",
+      "license": "CC BY-SA 4.0 / GFDL",
+      "role": "etymology, forms, affixes and derived terms"
+    },
+    {
+      "id": "src-editorial",
+      "name": "English Word Elements editorial analysis",
+      "url": "https://github.com/shynewsky/00-english-word-elements",
+      "license": "CC BY-SA 4.0",
+      "role": "Korean glosses, pedagogical segmentation and sense linking"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "concept-negation",
+      "labels": {
+        "ko": [
+          "부정",
+          "아님",
+          "반대"
+        ],
+        "en": [
+          "negation",
+          "not",
+          "opposite"
+        ]
+      },
+      "descriptionKo": "어떤 성질이나 상태가 아님을 나타냄"
+    },
+    {
+      "id": "concept-belief",
+      "labels": {
+        "ko": [
+          "믿다",
+          "믿음",
+          "신뢰"
+        ],
+        "en": [
+          "believe",
+          "belief",
+          "trust"
+        ]
+      },
+      "descriptionKo": "사실이라고 받아들이거나 신뢰하는 것"
+    },
+    {
+      "id": "concept-state",
+      "labels": {
+        "ko": [
+          "상태",
+          "성질",
+          "됨"
+        ],
+        "en": [
+          "state",
+          "quality",
+          "condition"
+        ]
+      },
+      "descriptionKo": "상태나 성질을 나타냄"
+    },
+    {
+      "id": "concept-writing",
+      "labels": {
+        "ko": [
+          "쓰다",
+          "기록하다",
+          "글"
+        ],
+        "en": [
+          "write",
+          "record",
+          "writing"
+        ]
+      },
+      "descriptionKo": "글이나 기호로 기록하는 것"
+    },
+    {
+      "id": "concept-carrying",
+      "labels": {
+        "ko": [
+          "나르다",
+          "운반하다",
+          "지니다"
+        ],
+        "en": [
+          "carry",
+          "transport",
+          "bear"
+        ]
+      },
+      "descriptionKo": "무언가를 옮기거나 지니는 것"
+    },
+    {
+      "id": "concept-crossing",
+      "labels": {
+        "ko": [
+          "가로질러",
+          "건너",
+          "횡단"
+        ],
+        "en": [
+          "across",
+          "through",
+          "beyond"
+        ]
+      },
+      "descriptionKo": "한쪽에서 다른 쪽으로 건너는 것"
+    },
+    {
+      "id": "concept-life",
+      "labels": {
+        "ko": [
+          "생명",
+          "생물",
+          "삶"
+        ],
+        "en": [
+          "life",
+          "living",
+          "biology"
+        ]
+      },
+      "descriptionKo": "생명과 살아 있는 존재"
+    },
+    {
+      "id": "concept-study",
+      "labels": {
+        "ko": [
+          "학문",
+          "연구",
+          "학설"
+        ],
+        "en": [
+          "study",
+          "science",
+          "field of study"
+        ]
+      },
+      "descriptionKo": "체계적인 학문이나 연구 분야"
+    },
+    {
+      "id": "concept-possibility",
+      "labels": {
+        "ko": [
+          "가능",
+          "할 수 있음",
+          "능력"
+        ],
+        "en": [
+          "possible",
+          "capable",
+          "able"
+        ]
+      },
+      "descriptionKo": "어떤 일을 할 수 있는 상태"
+    },
+    {
+      "id": "concept-agent",
+      "labels": {
+        "ko": [
+          "행위자",
+          "사람",
+          "하는 사람"
+        ],
+        "en": [
+          "agent",
+          "person who",
+          "one who"
+        ]
+      },
+      "descriptionKo": "행동을 하는 사람이나 도구"
+    },
+    {
+      "id": "concept-inside",
+      "labels": {
+        "ko": [
+          "안으로",
+          "내부",
+          "안에"
+        ],
+        "en": [
+          "in",
+          "into",
+          "inside"
+        ]
+      },
+      "descriptionKo": "내부로 향하거나 내부에 있는 것"
+    },
+    {
+      "id": "concept-action",
+      "labels": {
+        "ko": [
+          "행위",
+          "과정",
+          "결과"
+        ],
+        "en": [
+          "action",
+          "process",
+          "result"
+        ]
+      },
+      "descriptionKo": "행동, 과정 또는 그 결과"
+    },
+    {
+      "id": "concept-before",
+      "labels": {
+        "ko": [
+          "이전",
+          "미리",
+          "앞"
+        ],
+        "en": [
+          "before",
+          "in advance",
+          "earlier"
+        ]
+      },
+      "descriptionKo": "시간이나 순서가 앞섬"
+    },
+    {
+      "id": "concept-again",
+      "labels": {
+        "ko": [
+          "다시",
+          "반복"
+        ],
+        "en": [
+          "again",
+          "back",
+          "repeat"
+        ]
+      },
+      "descriptionKo": "행동을 다시 하거나 되돌림"
+    }
+  ],
+  "elements": [
+    {
+      "id": "el-prefix-un",
+      "canonicalForm": "un-",
+      "kind": "prefix",
+      "originLanguage": "Old English",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "un-",
+          "conditionKo": "일반적인 형태"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-un-negation",
+          "glossKo": [
+            "아닌",
+            "반대의"
+          ],
+          "glossEn": [
+            "not",
+            "opposite of"
+          ],
+          "concepts": [
+            "concept-negation"
+          ],
+          "function": "derivational",
+          "categoryChange": null,
+          "productivity": "high",
+          "usageNoteKo": "형용사나 명사 앞에서 부정 또는 반대 의미를 만든다.",
+          "etymologyNoteKo": "고대 영어 계열의 부정 접두사이다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-prefix-in",
+      "canonicalForm": "in-",
+      "kind": "prefix",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "in-",
+          "conditionKo": "기본형"
+        },
+        {
+          "form": "im-",
+          "conditionKo": "주로 b, m, p 앞"
+        },
+        {
+          "form": "il-",
+          "conditionKo": "주로 l 앞"
+        },
+        {
+          "form": "ir-",
+          "conditionKo": "주로 r 앞"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-in-negation",
+          "glossKo": [
+            "아닌",
+            "부정의"
+          ],
+          "glossEn": [
+            "not",
+            "opposite of"
+          ],
+          "concepts": [
+            "concept-negation"
+          ],
+          "function": "derivational",
+          "categoryChange": null,
+          "productivity": "medium",
+          "usageNoteKo": "형용사 앞에서 부정 의미를 만든다.",
+          "etymologyNoteKo": "라틴어 부정 접두사 계열이다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        },
+        {
+          "id": "els-in-inward",
+          "glossKo": [
+            "안으로",
+            "안에"
+          ],
+          "glossEn": [
+            "in",
+            "into",
+            "toward"
+          ],
+          "concepts": [
+            "concept-inside"
+          ],
+          "function": "derivational",
+          "categoryChange": null,
+          "productivity": "historical",
+          "usageNoteKo": "방향이나 위치가 내부를 향함을 나타낸다.",
+          "etymologyNoteKo": "라틴어 in에서 유래한 방향 접두사이다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-prefix-trans",
+      "canonicalForm": "trans-",
+      "kind": "prefix",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "trans-",
+          "conditionKo": "기본형"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-trans-across",
+          "glossKo": [
+            "가로질러",
+            "건너편으로"
+          ],
+          "glossEn": [
+            "across",
+            "through",
+            "beyond"
+          ],
+          "concepts": [
+            "concept-crossing"
+          ],
+          "function": "derivational",
+          "categoryChange": null,
+          "productivity": "medium",
+          "usageNoteKo": "경계나 공간을 가로지르는 의미를 더한다.",
+          "etymologyNoteKo": "라틴어 trans에서 유래했다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-prefix-re",
+      "canonicalForm": "re-",
+      "kind": "prefix",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "re-",
+          "conditionKo": "기본형"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-re-again",
+          "glossKo": [
+            "다시",
+            "되돌려"
+          ],
+          "glossEn": [
+            "again",
+            "back"
+          ],
+          "concepts": [
+            "concept-again"
+          ],
+          "function": "derivational",
+          "categoryChange": null,
+          "productivity": "high",
+          "usageNoteKo": "동작의 반복이나 되돌림을 나타낸다.",
+          "etymologyNoteKo": "라틴어 re에서 유래했다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-prefix-pre",
+      "canonicalForm": "pre-",
+      "kind": "prefix",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "pre-",
+          "conditionKo": "기본형"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-pre-before",
+          "glossKo": [
+            "이전에",
+            "미리"
+          ],
+          "glossEn": [
+            "before",
+            "in advance"
+          ],
+          "concepts": [
+            "concept-before"
+          ],
+          "function": "derivational",
+          "categoryChange": null,
+          "productivity": "high",
+          "usageNoteKo": "시간이나 순서상 앞섬을 나타낸다.",
+          "etymologyNoteKo": "라틴어 prae에서 유래했다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-prefix-de",
+      "canonicalForm": "de-",
+      "kind": "prefix",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "de-",
+          "conditionKo": "기본형"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-de-down-away",
+          "glossKo": [
+            "아래로",
+            "떼어",
+            "완전히"
+          ],
+          "glossEn": [
+            "down",
+            "away",
+            "completely"
+          ],
+          "concepts": [],
+          "function": "derivational",
+          "categoryChange": null,
+          "productivity": "historical",
+          "usageNoteKo": "라틴어계 단어에서 방향, 제거 또는 강화를 나타낸다.",
+          "etymologyNoteKo": "라틴어 de에서 유래했다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-combining-bio",
+      "canonicalForm": "bio-",
+      "kind": "combining-form",
+      "originLanguage": "Greek",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "bio-",
+          "conditionKo": "모음 앞에서도 보통 유지"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-bio-life",
+          "glossKo": [
+            "생명",
+            "생물"
+          ],
+          "glossEn": [
+            "life",
+            "living organisms"
+          ],
+          "concepts": [
+            "concept-life"
+          ],
+          "function": "derivational",
+          "categoryChange": null,
+          "productivity": "high",
+          "usageNoteKo": "생명이나 생물과 관련된 학술어를 만든다.",
+          "etymologyNoteKo": "그리스어 bios에서 유래했다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-root-port",
+      "canonicalForm": "port",
+      "kind": "root",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "port",
+          "conditionKo": "일반적인 형태"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-port-carry",
+          "glossKo": [
+            "나르다",
+            "운반하다"
+          ],
+          "glossEn": [
+            "carry",
+            "bear"
+          ],
+          "concepts": [
+            "concept-carrying"
+          ],
+          "function": "derivational",
+          "categoryChange": null,
+          "productivity": "historical",
+          "usageNoteKo": "라틴어계 단어에서 운반 의미의 중심을 이룬다.",
+          "etymologyNoteKo": "라틴어 portare와 관련된다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-root-scrib",
+      "canonicalForm": "scrib/script",
+      "kind": "root",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "scrib",
+          "conditionKo": "일부 동사형"
+        },
+        {
+          "form": "scribe",
+          "conditionKo": "단어 끝이나 특정 동사형"
+        },
+        {
+          "form": "script",
+          "conditionKo": "명사형 파생에서 자주 나타남"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-scrib-write",
+          "glossKo": [
+            "쓰다",
+            "기록하다"
+          ],
+          "glossEn": [
+            "write",
+            "record"
+          ],
+          "concepts": [
+            "concept-writing"
+          ],
+          "function": "derivational",
+          "categoryChange": null,
+          "productivity": "historical",
+          "usageNoteKo": "쓰기와 기록에 관련된 라틴어계 단어의 중심 어근이다.",
+          "etymologyNoteKo": "라틴어 scribere와 scriptum 계열이다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-combining-graphy",
+      "canonicalForm": "-graphy",
+      "kind": "combining-form",
+      "originLanguage": "Greek",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "-graphy",
+          "conditionKo": "학술어의 뒤 요소"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-graphy-writing",
+          "glossKo": [
+            "기록",
+            "서술",
+            "기록법"
+          ],
+          "glossEn": [
+            "writing",
+            "description",
+            "recording"
+          ],
+          "concepts": [
+            "concept-writing"
+          ],
+          "function": "derivational",
+          "categoryChange": "concept→noun",
+          "productivity": "medium",
+          "usageNoteKo": "무언가를 기록하거나 서술하는 분야와 결과를 나타낸다.",
+          "etymologyNoteKo": "그리스어 graphein 계열에서 유래했다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-combining-logy",
+      "canonicalForm": "-logy",
+      "kind": "combining-form",
+      "originLanguage": "Greek",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "-logy",
+          "conditionKo": "학문 분야를 나타내는 뒤 요소"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-logy-study",
+          "glossKo": [
+            "학문",
+            "연구 분야"
+          ],
+          "glossEn": [
+            "study of",
+            "field of knowledge"
+          ],
+          "concepts": [
+            "concept-study"
+          ],
+          "function": "derivational",
+          "categoryChange": "concept→noun",
+          "productivity": "high",
+          "usageNoteKo": "특정 대상을 연구하는 학문 분야를 나타낸다.",
+          "etymologyNoteKo": "그리스어 logos 계열에서 유래했다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-suffix-able",
+      "canonicalForm": "-able",
+      "kind": "suffix",
+      "originLanguage": "Latin/French",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "-able",
+          "conditionKo": "기본형"
+        },
+        {
+          "form": "-ible",
+          "conditionKo": "일부 라틴어계 어휘"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-able-capable",
+          "glossKo": [
+            "할 수 있는",
+            "가능한"
+          ],
+          "glossEn": [
+            "capable of",
+            "able to be"
+          ],
+          "concepts": [
+            "concept-possibility"
+          ],
+          "function": "derivational",
+          "categoryChange": "verb→adjective",
+          "productivity": "high",
+          "usageNoteKo": "동작 가능성이나 적합성을 나타내는 형용사를 만든다.",
+          "etymologyNoteKo": "라틴어와 프랑스어 계열을 거쳐 영어에 들어왔다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-suffix-ness",
+      "canonicalForm": "-ness",
+      "kind": "suffix",
+      "originLanguage": "Old English",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "-ness",
+          "conditionKo": "형용사 뒤"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-ness-state",
+          "glossKo": [
+            "상태",
+            "성질"
+          ],
+          "glossEn": [
+            "state of",
+            "quality of"
+          ],
+          "concepts": [
+            "concept-state"
+          ],
+          "function": "derivational",
+          "categoryChange": "adjective→noun",
+          "productivity": "high",
+          "usageNoteKo": "형용사를 상태나 성질을 나타내는 명사로 만든다.",
+          "etymologyNoteKo": "고대 영어 명사형 접미사에서 유래했다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-suffix-er-agent",
+      "canonicalForm": "-er",
+      "kind": "suffix",
+      "originLanguage": "Old English",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "-er",
+          "conditionKo": "동사 뒤"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-er-agent",
+          "glossKo": [
+            "하는 사람",
+            "행위자"
+          ],
+          "glossEn": [
+            "one who",
+            "agent"
+          ],
+          "concepts": [
+            "concept-agent"
+          ],
+          "function": "derivational",
+          "categoryChange": "verb→noun",
+          "productivity": "high",
+          "usageNoteKo": "행동을 하는 사람이나 때로는 도구를 나타낸다.",
+          "etymologyNoteKo": "행위자 명사를 만드는 영어 접미사이다. 비교급 -er와 별도 요소로 본다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-suffix-ion",
+      "canonicalForm": "-ion",
+      "kind": "suffix",
+      "originLanguage": "Latin/French",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "-ion",
+          "conditionKo": "기본 표기"
+        },
+        {
+          "form": "-tion",
+          "conditionKo": "많은 라틴어계 명사"
+        },
+        {
+          "form": "-ation",
+          "conditionKo": "일부 동사 파생 명사"
+        },
+        {
+          "form": "-sion",
+          "conditionKo": "일부 어간 뒤"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-ion-action",
+          "glossKo": [
+            "행위",
+            "과정",
+            "결과"
+          ],
+          "glossEn": [
+            "action",
+            "process",
+            "result"
+          ],
+          "concepts": [
+            "concept-action"
+          ],
+          "function": "derivational",
+          "categoryChange": "verb→noun",
+          "productivity": "medium",
+          "usageNoteKo": "동작, 과정 또는 결과를 나타내는 명사를 만든다.",
+          "etymologyNoteKo": "라틴어 명사형 어미 계열에서 유래했다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    }
+  ],
+  "words": [
+    {
+      "id": "wd-run",
+      "lemma": "run",
+      "partOfSpeech": [
+        "verb"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-run-1",
+          "ko": [
+            "달리다",
+            "뛰다"
+          ],
+          "en": [
+            "to move quickly on foot"
+          ],
+          "concepts": []
+        }
+      ],
+      "forms": [
+        {
+          "form": "runs",
+          "type": "third-person"
+        },
+        {
+          "form": "ran",
+          "type": "past"
+        },
+        {
+          "form": "running",
+          "type": "present-participle"
+        }
+      ],
+      "relations": [],
+      "analyses": [],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-runner",
+      "lemma": "runner",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-runner-1",
+          "ko": [
+            "달리는 사람",
+            "주자"
+          ],
+          "en": [
+            "a person who runs"
+          ],
+          "concepts": [
+            "concept-agent"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "runners",
+          "type": "plural"
+        }
+      ],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-run",
+          "transparency": "transparent",
+          "noteKo": "run에 행위자 접미사 -er가 붙은 파생어"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-runner-1",
+          "wordSenseId": "wds-runner-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "달리다 + 하는 사람",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "run",
+              "role": "base",
+              "wordId": "wd-run"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "ner",
+              "role": "suffix",
+              "elementSenseId": "els-er-agent",
+              "boundaryChangeNote": "짧은 모음 뒤 마지막 자음 n이 겹쳐진다."
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-write",
+      "lemma": "write",
+      "partOfSpeech": [
+        "verb"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-write-1",
+          "ko": [
+            "쓰다",
+            "기록하다"
+          ],
+          "en": [
+            "to form letters or record words"
+          ],
+          "concepts": [
+            "concept-writing"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "writes",
+          "type": "third-person"
+        },
+        {
+          "form": "wrote",
+          "type": "past"
+        },
+        {
+          "form": "written",
+          "type": "past-participle"
+        },
+        {
+          "form": "writing",
+          "type": "present-participle"
+        }
+      ],
+      "relations": [],
+      "analyses": [],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-writer",
+      "lemma": "writer",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-writer-1",
+          "ko": [
+            "글을 쓰는 사람",
+            "작가"
+          ],
+          "en": [
+            "a person who writes"
+          ],
+          "concepts": [
+            "concept-writing",
+            "concept-agent"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "writers",
+          "type": "plural"
+        }
+      ],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-write",
+          "transparency": "transparent",
+          "noteKo": "write에 행위자 접미사 -er가 붙음"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-writer-1",
+          "wordSenseId": "wds-writer-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "쓰다 + 하는 사람",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "writ",
+              "role": "base",
+              "wordId": "wd-write",
+              "boundaryChangeNote": "-er 앞에서 끝의 e가 탈락한다."
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "er",
+              "role": "suffix",
+              "elementSenseId": "els-er-agent"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-rewrite",
+      "lemma": "rewrite",
+      "partOfSpeech": [
+        "verb"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-rewrite-1",
+          "ko": [
+            "다시 쓰다"
+          ],
+          "en": [
+            "to write again"
+          ],
+          "concepts": [
+            "concept-writing",
+            "concept-again"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "rewrites",
+          "type": "third-person"
+        },
+        {
+          "form": "rewrote",
+          "type": "past"
+        },
+        {
+          "form": "rewritten",
+          "type": "past-participle"
+        },
+        {
+          "form": "rewriting",
+          "type": "present-participle"
+        }
+      ],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-write",
+          "transparency": "transparent",
+          "noteKo": "write에 반복 접두사 re-가 붙음"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-rewrite-1",
+          "wordSenseId": "wds-rewrite-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "다시 + 쓰다",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "re",
+              "role": "prefix",
+              "elementSenseId": "els-re-again"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "write",
+              "role": "base",
+              "wordId": "wd-write"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-prewrite",
+      "lemma": "prewrite",
+      "partOfSpeech": [
+        "verb"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-prewrite-1",
+          "ko": [
+            "미리 쓰다",
+            "초안을 먼저 작성하다"
+          ],
+          "en": [
+            "to write in advance"
+          ],
+          "concepts": [
+            "concept-writing",
+            "concept-before"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "prewrites",
+          "type": "third-person"
+        },
+        {
+          "form": "prewrote",
+          "type": "past"
+        },
+        {
+          "form": "prewriting",
+          "type": "present-participle"
+        }
+      ],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-write",
+          "transparency": "transparent",
+          "noteKo": "write에 pre-가 붙음"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-prewrite-1",
+          "wordSenseId": "wds-prewrite-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "미리 + 쓰다",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "pre",
+              "role": "prefix",
+              "elementSenseId": "els-pre-before"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "write",
+              "role": "base",
+              "wordId": "wd-write"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-believe",
+      "lemma": "believe",
+      "partOfSpeech": [
+        "verb"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-believe-1",
+          "ko": [
+            "믿다"
+          ],
+          "en": [
+            "to accept something as true"
+          ],
+          "concepts": [
+            "concept-belief"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "believes",
+          "type": "third-person"
+        },
+        {
+          "form": "believed",
+          "type": "past"
+        },
+        {
+          "form": "believing",
+          "type": "present-participle"
+        }
+      ],
+      "relations": [],
+      "analyses": [],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-believable",
+      "lemma": "believable",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-believable-1",
+          "ko": [
+            "믿을 수 있는"
+          ],
+          "en": [
+            "capable of being believed"
+          ],
+          "concepts": [
+            "concept-belief",
+            "concept-possibility"
+          ]
+        }
+      ],
+      "forms": [],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-believe",
+          "transparency": "transparent",
+          "noteKo": "believe에 -able이 붙음"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-believable-1",
+          "wordSenseId": "wds-believable-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "믿다 + 할 수 있는",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "believ",
+              "role": "base",
+              "wordId": "wd-believe",
+              "boundaryChangeNote": "-able 앞에서 끝의 e가 탈락한다."
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "able",
+              "role": "suffix",
+              "elementSenseId": "els-able-capable"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-unbelievable",
+      "lemma": "unbelievable",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-unbelievable-1",
+          "ko": [
+            "믿을 수 없는",
+            "믿기 어려운"
+          ],
+          "en": [
+            "not capable of being believed"
+          ],
+          "concepts": [
+            "concept-negation",
+            "concept-belief"
+          ]
+        }
+      ],
+      "forms": [],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-believable",
+          "transparency": "transparent",
+          "noteKo": "believable에 부정 접두사 un-이 붙음"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-unbelievable-1",
+          "wordSenseId": "wds-unbelievable-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "아닌 + 믿다 + 할 수 있는",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "un",
+              "role": "prefix",
+              "elementSenseId": "els-un-negation"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "believ",
+              "role": "base",
+              "wordId": "wd-believe",
+              "boundaryChangeNote": "-able 앞에서 끝의 e가 탈락한다."
+            },
+            {
+              "order": 3,
+              "parentOrder": null,
+              "surface": "able",
+              "role": "suffix",
+              "elementSenseId": "els-able-capable"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-happy",
+      "lemma": "happy",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-happy-1",
+          "ko": [
+            "행복한",
+            "기쁜"
+          ],
+          "en": [
+            "feeling or showing pleasure"
+          ],
+          "concepts": [
+            "concept-state"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "happier",
+          "type": "comparative"
+        },
+        {
+          "form": "happiest",
+          "type": "superlative"
+        }
+      ],
+      "relations": [],
+      "analyses": [],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-happiness",
+      "lemma": "happiness",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-happiness-1",
+          "ko": [
+            "행복",
+            "행복한 상태"
+          ],
+          "en": [
+            "the state of being happy"
+          ],
+          "concepts": [
+            "concept-state"
+          ]
+        }
+      ],
+      "forms": [],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-happy",
+          "transparency": "transparent",
+          "noteKo": "happy에 -ness가 붙음"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-happiness-1",
+          "wordSenseId": "wds-happiness-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "행복한 + 상태",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "happi",
+              "role": "base",
+              "wordId": "wd-happy",
+              "boundaryChangeNote": "자음 앞 y가 i로 바뀐다."
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "ness",
+              "role": "suffix",
+              "elementSenseId": "els-ness-state"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-unhappiness",
+      "lemma": "unhappiness",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-unhappiness-1",
+          "ko": [
+            "불행",
+            "행복하지 않은 상태"
+          ],
+          "en": [
+            "the state of not being happy"
+          ],
+          "concepts": [
+            "concept-negation",
+            "concept-state"
+          ]
+        }
+      ],
+      "forms": [],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-happiness",
+          "transparency": "transparent",
+          "noteKo": "happiness에 un-이 붙은 파생어"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-unhappiness-1",
+          "wordSenseId": "wds-unhappiness-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "아닌 + 행복한 + 상태",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "un",
+              "role": "prefix",
+              "elementSenseId": "els-un-negation"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "happi",
+              "role": "base",
+              "wordId": "wd-happy",
+              "boundaryChangeNote": "-ness 앞에서 y가 i로 바뀐다."
+            },
+            {
+              "order": 3,
+              "parentOrder": null,
+              "surface": "ness",
+              "role": "suffix",
+              "elementSenseId": "els-ness-state"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-possible",
+      "lemma": "possible",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-possible-1",
+          "ko": [
+            "가능한"
+          ],
+          "en": [
+            "able to happen or be done"
+          ],
+          "concepts": [
+            "concept-possibility"
+          ]
+        }
+      ],
+      "forms": [],
+      "relations": [],
+      "analyses": [],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-impossible",
+      "lemma": "impossible",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-impossible-1",
+          "ko": [
+            "불가능한"
+          ],
+          "en": [
+            "not possible"
+          ],
+          "concepts": [
+            "concept-negation",
+            "concept-possibility"
+          ]
+        }
+      ],
+      "forms": [],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-possible",
+          "transparency": "transparent",
+          "noteKo": "possible에 부정 접두사 in-의 이형태 im-이 붙음"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-impossible-1",
+          "wordSenseId": "wds-impossible-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "아닌 + 가능한",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "im",
+              "role": "prefix",
+              "elementSenseId": "els-in-negation"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "possible",
+              "role": "base",
+              "wordId": "wd-possible"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-regular",
+      "lemma": "regular",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-regular-1",
+          "ko": [
+            "규칙적인",
+            "정기적인"
+          ],
+          "en": [
+            "following a consistent pattern"
+          ],
+          "concepts": []
+        }
+      ],
+      "forms": [],
+      "relations": [],
+      "analyses": [],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-irregular",
+      "lemma": "irregular",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-irregular-1",
+          "ko": [
+            "불규칙한"
+          ],
+          "en": [
+            "not regular"
+          ],
+          "concepts": [
+            "concept-negation"
+          ]
+        }
+      ],
+      "forms": [],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-regular",
+          "transparency": "transparent",
+          "noteKo": "regular에 in-의 이형태 ir-이 붙음"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-irregular-1",
+          "wordSenseId": "wds-irregular-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "아닌 + 규칙적인",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "ir",
+              "role": "prefix",
+              "elementSenseId": "els-in-negation"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "regular",
+              "role": "base",
+              "wordId": "wd-regular"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-transport",
+      "lemma": "transport",
+      "partOfSpeech": [
+        "verb",
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-transport-1",
+          "ko": [
+            "운반하다",
+            "수송하다"
+          ],
+          "en": [
+            "to carry from one place to another"
+          ],
+          "concepts": [
+            "concept-carrying",
+            "concept-crossing"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "transports",
+          "type": "third-person/plural"
+        },
+        {
+          "form": "transported",
+          "type": "past"
+        },
+        {
+          "form": "transporting",
+          "type": "present-participle"
+        }
+      ],
+      "relations": [],
+      "analyses": [
+        {
+          "id": "an-transport-1",
+          "wordSenseId": "wds-transport-1",
+          "mode": "etymological",
+          "transparency": "semi-transparent",
+          "explanationKo": "가로질러 + 나르다",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "trans",
+              "role": "prefix",
+              "elementSenseId": "els-trans-across"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "port",
+              "role": "root",
+              "elementSenseId": "els-port-carry"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-transportation",
+      "lemma": "transportation",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-transportation-1",
+          "ko": [
+            "운송",
+            "교통"
+          ],
+          "en": [
+            "the act or system of transporting"
+          ],
+          "concepts": [
+            "concept-carrying",
+            "concept-action"
+          ]
+        }
+      ],
+      "forms": [],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-transport",
+          "transparency": "transparent",
+          "noteKo": "transport에 명사형 접미사가 붙음"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-transportation-1",
+          "wordSenseId": "wds-transportation-1",
+          "mode": "etymological",
+          "transparency": "semi-transparent",
+          "explanationKo": "가로질러 + 나르다 + 행위/과정",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "trans",
+              "role": "prefix",
+              "elementSenseId": "els-trans-across"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "port",
+              "role": "root",
+              "elementSenseId": "els-port-carry"
+            },
+            {
+              "order": 3,
+              "parentOrder": null,
+              "surface": "ation",
+              "role": "suffix",
+              "elementSenseId": "els-ion-action"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-import",
+      "lemma": "import",
+      "partOfSpeech": [
+        "verb",
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-import-1",
+          "ko": [
+            "수입하다",
+            "들여오다"
+          ],
+          "en": [
+            "to bring goods or data into a place"
+          ],
+          "concepts": [
+            "concept-inside",
+            "concept-carrying"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "imports",
+          "type": "third-person/plural"
+        },
+        {
+          "form": "imported",
+          "type": "past"
+        },
+        {
+          "form": "importing",
+          "type": "present-participle"
+        }
+      ],
+      "relations": [],
+      "analyses": [
+        {
+          "id": "an-import-1",
+          "wordSenseId": "wds-import-1",
+          "mode": "etymological",
+          "transparency": "semi-transparent",
+          "explanationKo": "안으로 + 나르다",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "im",
+              "role": "prefix",
+              "elementSenseId": "els-in-inward"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "port",
+              "role": "root",
+              "elementSenseId": "els-port-carry"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-portable",
+      "lemma": "portable",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-portable-1",
+          "ko": [
+            "휴대할 수 있는",
+            "옮길 수 있는"
+          ],
+          "en": [
+            "able to be carried or moved"
+          ],
+          "concepts": [
+            "concept-carrying",
+            "concept-possibility"
+          ]
+        }
+      ],
+      "forms": [],
+      "relations": [],
+      "analyses": [
+        {
+          "id": "an-portable-1",
+          "wordSenseId": "wds-portable-1",
+          "mode": "etymological",
+          "transparency": "semi-transparent",
+          "explanationKo": "나르다 + 할 수 있는",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "port",
+              "role": "root",
+              "elementSenseId": "els-port-carry"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "able",
+              "role": "suffix",
+              "elementSenseId": "els-able-capable"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-biology",
+      "lemma": "biology",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-biology-1",
+          "ko": [
+            "생물학"
+          ],
+          "en": [
+            "the scientific study of life"
+          ],
+          "concepts": [
+            "concept-life",
+            "concept-study"
+          ]
+        }
+      ],
+      "forms": [],
+      "relations": [],
+      "analyses": [
+        {
+          "id": "an-biology-1",
+          "wordSenseId": "wds-biology-1",
+          "mode": "etymological",
+          "transparency": "transparent",
+          "explanationKo": "생명 + 학문",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "bio",
+              "role": "root",
+              "elementSenseId": "els-bio-life"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "logy",
+              "role": "suffix",
+              "elementSenseId": "els-logy-study"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-biography",
+      "lemma": "biography",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-biography-1",
+          "ko": [
+            "전기",
+            "일대기"
+          ],
+          "en": [
+            "a written account of a person’s life"
+          ],
+          "concepts": [
+            "concept-life",
+            "concept-writing"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "biographies",
+          "type": "plural"
+        }
+      ],
+      "relations": [],
+      "analyses": [
+        {
+          "id": "an-biography-1",
+          "wordSenseId": "wds-biography-1",
+          "mode": "etymological",
+          "transparency": "transparent",
+          "explanationKo": "생명/삶 + 기록",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "bio",
+              "role": "root",
+              "elementSenseId": "els-bio-life"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "graphy",
+              "role": "suffix",
+              "elementSenseId": "els-graphy-writing"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-describe",
+      "lemma": "describe",
+      "partOfSpeech": [
+        "verb"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-describe-1",
+          "ko": [
+            "묘사하다",
+            "서술하다"
+          ],
+          "en": [
+            "to give an account of something in words"
+          ],
+          "concepts": [
+            "concept-writing"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "describes",
+          "type": "third-person"
+        },
+        {
+          "form": "described",
+          "type": "past"
+        },
+        {
+          "form": "describing",
+          "type": "present-participle"
+        }
+      ],
+      "relations": [],
+      "analyses": [
+        {
+          "id": "an-describe-1",
+          "wordSenseId": "wds-describe-1",
+          "mode": "etymological",
+          "transparency": "opaque",
+          "explanationKo": "역사적으로 de-와 쓰다 계열 어근이 결합했다.",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "de",
+              "role": "prefix",
+              "elementSenseId": "els-de-down-away"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "scribe",
+              "role": "root",
+              "elementSenseId": "els-scrib-write"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-description",
+      "lemma": "description",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-description-1",
+          "ko": [
+            "묘사",
+            "설명"
+          ],
+          "en": [
+            "an account that describes something"
+          ],
+          "concepts": [
+            "concept-writing",
+            "concept-action"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "descriptions",
+          "type": "plural"
+        }
+      ],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-describe",
+          "transparency": "semi-transparent",
+          "noteKo": "describe의 명사형 파생어"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-description-1",
+          "wordSenseId": "wds-description-1",
+          "mode": "etymological",
+          "transparency": "semi-transparent",
+          "explanationKo": "de- + 쓰다/기록하다 + 행위 또는 결과",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "de",
+              "role": "prefix",
+              "elementSenseId": "els-de-down-away"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "script",
+              "role": "root",
+              "elementSenseId": "els-scrib-write"
+            },
+            {
+              "order": 3,
+              "parentOrder": null,
+              "surface": "ion",
+              "role": "suffix",
+              "elementSenseId": "els-ion-action"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-inscription",
+      "lemma": "inscription",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-inscription-1",
+          "ko": [
+            "비문",
+            "새겨 넣은 글"
+          ],
+          "en": [
+            "words written or carved on a surface"
+          ],
+          "concepts": [
+            "concept-writing",
+            "concept-inside"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "inscriptions",
+          "type": "plural"
+        }
+      ],
+      "relations": [],
+      "analyses": [
+        {
+          "id": "an-inscription-1",
+          "wordSenseId": "wds-inscription-1",
+          "mode": "etymological",
+          "transparency": "semi-transparent",
+          "explanationKo": "안에/위에 + 기록하다 + 결과",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "in",
+              "role": "prefix",
+              "elementSenseId": "els-in-inward"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "script",
+              "role": "root",
+              "elementSenseId": "els-scrib-write"
+            },
+            {
+              "order": 3,
+              "parentOrder": null,
+              "surface": "ion",
+              "role": "suffix",
+              "elementSenseId": "els-ion-action"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    }
+  ]
+}
