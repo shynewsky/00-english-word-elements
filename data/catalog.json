@@ -3,7 +3,7 @@
     "project": "English Word Elements",
     "repository": "00-english-word-elements",
     "schemaVersion": 1,
-    "dataVersion": "0.1.0",
+    "dataVersion": "0.2.0",
     "language": "en",
     "interfaceLanguages": [
       "ko",
@@ -910,6 +910,50 @@
         }
       ],
       "status": "reviewed"
+    },
+    {
+      "id": "el-suffix-ity",
+      "canonicalForm": "-ity",
+      "kind": "suffix",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "-ity",
+          "conditionKo": "형용사 뒤에서 명사를 만드는 일반형"
+        },
+        {
+          "form": "-ty",
+          "conditionKo": "일부 -ous 계열 등에서 나타나는 형태"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-ity-state",
+          "glossKo": [
+            "상태",
+            "성질"
+          ],
+          "glossEn": [
+            "state",
+            "quality",
+            "condition"
+          ],
+          "concepts": [
+            "concept-state"
+          ],
+          "function": "derivational",
+          "categoryChange": "adjective-to-noun",
+          "productivity": "high",
+          "usageNoteKo": "형용사에 붙어 상태나 성질을 나타내는 추상명사를 만든다.",
+          "etymologyNoteKo": "라틴어 -itas 계열에서 프랑스어를 거쳐 영어에 들어왔다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
     }
   ],
   "words": [
@@ -941,6 +985,10 @@
         {
           "form": "ran",
           "type": "past"
+        },
+        {
+          "form": "run",
+          "type": "past-participle"
         },
         {
           "form": "running",
@@ -988,7 +1036,8 @@
           "type": "derived-from",
           "targetWordId": "wd-run",
           "transparency": "transparent",
-          "noteKo": "run에 행위자 접미사 -er가 붙은 파생어"
+          "noteKo": "run에 행위자 접미사 -er가 붙은 파생어",
+          "categoryChange": "verb-to-noun"
         }
       ],
       "analyses": [
@@ -2410,6 +2459,107 @@
               "surface": "ion",
               "role": "suffix",
               "elementSenseId": "els-ion-action"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-available",
+      "lemma": "available",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-available-1",
+          "ko": [
+            "이용할 수 있는",
+            "구할 수 있는"
+          ],
+          "en": [
+            "able to be used or obtained"
+          ],
+          "concepts": [
+            "concept-possibility"
+          ]
+        }
+      ],
+      "forms": [],
+      "relations": [],
+      "analyses": [],
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-availability",
+      "lemma": "availability",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-availability-1",
+          "ko": [
+            "이용 가능성",
+            "구할 수 있음"
+          ],
+          "en": [
+            "the state of being available"
+          ],
+          "concepts": [
+            "concept-possibility",
+            "concept-state"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "availabilities",
+          "type": "plural"
+        }
+      ],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-available",
+          "transparency": "transparent",
+          "categoryChange": "adjective-to-noun",
+          "noteKo": "available에 명사화 접미사 -ity가 붙은 파생어"
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-availability-1",
+          "wordSenseId": "wds-availability-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "이용할 수 있는 + 상태·성질",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "availabil",
+              "role": "base",
+              "wordId": "wd-available",
+              "boundaryChangeNote": "-ity 앞에서 available의 끝 철자 -le가 -il-로 바뀐다."
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "ity",
+              "role": "suffix",
+              "elementSenseId": "els-ity-state"
             }
           ]
         }
