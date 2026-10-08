@@ -100,7 +100,8 @@ await eachJsonLine(simpleWiktionaryPath, (record) => {
     else if (tags.has('superlative')) type = 'superlative';
     if (!type) continue;
     for (const form of splitSurfaceForms(sourceForm.form || '')) {
-      if (!item.forms.some((candidate) => candidate.form === form && candidate.type === type)) item.forms.push({ form, type });
+      const normalizedForm = normalize(form).toLocaleLowerCase('en');
+      if (!item.forms.some((candidate) => normalize(candidate.form).toLocaleLowerCase('en') === normalizedForm && candidate.type === type)) item.forms.push({ form, type });
     }
   }
   simple.set(key, item);
