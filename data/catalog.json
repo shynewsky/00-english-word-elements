@@ -3,7 +3,7 @@
     "project": "English Word Elements",
     "repository": "00-english-word-elements",
     "schemaVersion": 1,
-    "dataVersion": "0.3.0",
+    "dataVersion": "0.4.0",
     "language": "en",
     "interfaceLanguages": [
       "ko",
@@ -961,6 +961,82 @@
           "productivity": "high",
           "usageNoteKo": "형용사에 붙어 상태나 성질을 나타내는 추상명사를 만든다.",
           "etymologyNoteKo": "라틴어 -itas 계열에서 프랑스어를 거쳐 영어에 들어왔다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-suffix-ive",
+      "canonicalForm": "-ive",
+      "kind": "suffix",
+      "originLanguage": "Latin/French",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "-ive",
+          "conditionKo": "동사나 명사 어간 뒤"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-ive-quality",
+          "glossKo": [
+            "성질을 가진",
+            "하는 경향이 있는"
+          ],
+          "glossEn": [
+            "having the nature of",
+            "tending to"
+          ],
+          "concepts": [
+            "concept-state"
+          ],
+          "function": "derivational",
+          "categoryChange": "verb→adjective",
+          "productivity": "medium",
+          "usageNoteKo": "동사나 명사 어간에 붙어 성질이나 경향을 나타내는 형용사를 만든다.",
+          "etymologyNoteKo": "라틴어 -ivus와 프랑스어 계열을 거쳐 영어에 들어왔다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-suffix-ly",
+      "canonicalForm": "-ly",
+      "kind": "suffix",
+      "originLanguage": "Old English",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "-ly",
+          "conditionKo": "주로 형용사 뒤"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-ly-manner",
+          "glossKo": [
+            "~하게",
+            "~한 방식으로"
+          ],
+          "glossEn": [
+            "in a manner",
+            "in a way"
+          ],
+          "concepts": [],
+          "function": "derivational",
+          "categoryChange": "adjective→adverb",
+          "productivity": "high",
+          "usageNoteKo": "형용사를 방식이나 태도를 나타내는 부사로 만든다.",
+          "etymologyNoteKo": "고대 영어 -līċ 계열에서 발달했다.",
           "sources": [
             "src-wiktionary",
             "src-editorial"
@@ -2580,6 +2656,518 @@
       ],
       "sources": [
         "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-intuit",
+      "lemma": "intuit",
+      "partOfSpeech": [
+        "verb"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-intuit-1",
+          "ko": [
+            "직관적으로 알다",
+            "직감하다"
+          ],
+          "en": [
+            "to know intuitively or by immediate perception"
+          ],
+          "concepts": []
+        }
+      ],
+      "forms": [
+        {
+          "form": "intuits",
+          "type": "third-person"
+        },
+        {
+          "form": "intuited",
+          "type": "past"
+        },
+        {
+          "form": "intuited",
+          "type": "past-participle"
+        },
+        {
+          "form": "intuiting",
+          "type": "present-participle"
+        }
+      ],
+      "relations": [],
+      "analyses": [],
+      "pronunciations": [
+        {
+          "ipa": "/ɪnˈtjuːɪt/",
+          "variety": "UK",
+          "sourceId": "src-wiktionary"
+        },
+        {
+          "ipa": "/ɪnˈtuɪt/",
+          "variety": "US",
+          "sourceId": "src-wiktionary"
+        }
+      ],
+      "etymology": {
+        "summaryKo": "영어 intuition과 intuitive에서 역성된 동사다. 라틴어 intueor(바라보다, 관찰하다, 숙고하다)의 완료분사 intuitus와 연결되며, 더 거슬러 올라가면 in-(안으로, 향하여)와 tueor(바라보다)의 결합이다.",
+        "summaryEn": "A back-formation from intuition and intuitive, connected with Latin intuitus and intueor.",
+        "originLanguages": [
+          "English",
+          "Latin",
+          "Proto-Indo-European"
+        ],
+        "sourceIds": [
+          "src-wiktionary",
+          "src-editorial"
+        ]
+      },
+      "familyHeadwordId": "wd-intuit",
+      "familySummaryKo": "라틴어 intueor(바라보다, 관찰하다, 숙고하다) 계열에서 이어진 어휘군이다. 역사적으로 intuition과 intuitive가 먼저 영어에 들어왔고 intuit는 두 단어에서 역성된 동사다. 이 사전에서는 학습 편의를 위해 intuit를 가족 대표 표제어로 사용한다.",
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-intuition",
+      "lemma": "intuition",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-intuition-1",
+          "ko": [
+            "직관",
+            "직감",
+            "즉각적인 통찰"
+          ],
+          "en": [
+            "immediate cognition without conscious rational processes",
+            "a perceptive insight gained by intuition"
+          ],
+          "concepts": []
+        }
+      ],
+      "forms": [
+        {
+          "form": "intuitions",
+          "type": "plural"
+        }
+      ],
+      "relations": [
+        {
+          "type": "related-family",
+          "targetWordId": "wd-intuit",
+          "transparency": "semi-transparent",
+          "noteKo": "intuit와 같은 라틴어 어원군에 속한다."
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-intuition-synchronic",
+          "wordSenseId": "wds-intuition-1",
+          "mode": "synchronic",
+          "transparency": "semi-transparent",
+          "explanationKo": "학습용 공시 분석에서는 intuit + -ion으로 이해할 수 있다. 다만 역사적으로 영어 intuition이 동사 intuit보다 먼저 쓰였다.",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "intuit",
+              "role": "base",
+              "wordId": "wd-intuit"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "ion",
+              "role": "suffix",
+              "elementSenseId": "els-ion-action"
+            }
+          ]
+        }
+      ],
+      "pronunciations": [
+        {
+          "ipa": "/ˌɪn.tjuːˈɪʃ.ən/",
+          "variety": "UK",
+          "sourceId": "src-wiktionary"
+        },
+        {
+          "ipa": "/ˌɪn.tuˈɪʃ.ən/",
+          "variety": "US",
+          "sourceId": "src-wiktionary"
+        }
+      ],
+      "etymology": {
+        "summaryKo": "중세 프랑스어 intuition과 중세 라틴어 intuitiō를 거쳐 영어에 들어왔다. 라틴어 intueor(바라보다, 숙고하다)에서 이어진다.",
+        "summaryEn": "From Middle French intuition, from Medieval Latin intuitiō, from Latin intueor.",
+        "originLanguages": [
+          "Middle French",
+          "Medieval Latin",
+          "Latin"
+        ],
+        "sourceIds": [
+          "src-wiktionary",
+          "src-editorial"
+        ]
+      },
+      "familyHeadwordId": "wd-intuit",
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-kowiktionary",
+        "src-simplewiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-intuitive",
+      "lemma": "intuitive",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-intuitive-1",
+          "ko": [
+            "직관적인",
+            "직감적인",
+            "쉽게 이해되는"
+          ],
+          "en": [
+            "spontaneous without requiring conscious thought",
+            "easily understood or grasped by intuition"
+          ],
+          "concepts": []
+        }
+      ],
+      "forms": [
+        {
+          "form": "more intuitive",
+          "type": "comparative"
+        },
+        {
+          "form": "most intuitive",
+          "type": "superlative"
+        }
+      ],
+      "relations": [
+        {
+          "type": "related-family",
+          "targetWordId": "wd-intuit",
+          "transparency": "semi-transparent",
+          "noteKo": "intuit와 같은 라틴어 어원군에 속한다."
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-intuitive-synchronic",
+          "wordSenseId": "wds-intuitive-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "학습용 공시 분석에서는 intuit + -ive로 이해할 수 있다.",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "intuit",
+              "role": "base",
+              "wordId": "wd-intuit"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "ive",
+              "role": "suffix",
+              "elementSenseId": "els-ive-quality"
+            }
+          ]
+        }
+      ],
+      "pronunciations": [
+        {
+          "ipa": "/ɪnˈtjuːɪtɪv/",
+          "variety": "UK",
+          "sourceId": "src-wiktionary"
+        },
+        {
+          "ipa": "/ɪnˈt(j)uɪtɪv/",
+          "variety": "US",
+          "sourceId": "src-wiktionary"
+        }
+      ],
+      "etymology": {
+        "summaryKo": "중세 프랑스어 intuitif와 중세 라틴어 intuitivus를 거쳐 영어에 들어왔으며, 라틴어 intueri(바라보다, 숙고하다)와 연결된다.",
+        "summaryEn": "Borrowed from Middle French intuitif, from Medieval Latin intuitivus, from Latin intueri.",
+        "originLanguages": [
+          "Middle French",
+          "Medieval Latin",
+          "Latin"
+        ],
+        "sourceIds": [
+          "src-wiktionary",
+          "src-editorial"
+        ]
+      },
+      "familyHeadwordId": "wd-intuit",
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-kowiktionary",
+        "src-simplewiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-intuitively",
+      "lemma": "intuitively",
+      "partOfSpeech": [
+        "adverb"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-intuitively-1",
+          "ko": [
+            "직관적으로",
+            "직감적으로"
+          ],
+          "en": [
+            "by intuition",
+            "instinctively and without deliberate reasoning"
+          ],
+          "concepts": []
+        }
+      ],
+      "forms": [
+        {
+          "form": "more intuitively",
+          "type": "comparative"
+        },
+        {
+          "form": "most intuitively",
+          "type": "superlative"
+        }
+      ],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-intuitive",
+          "transparency": "transparent",
+          "noteKo": "intuitive에 부사형 접미사 -ly가 붙었다."
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-intuitively-synchronic",
+          "wordSenseId": "wds-intuitively-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "intuitive + -ly가 결합해 방식이나 태도를 나타내는 부사가 되었다.",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "intuitive",
+              "role": "base",
+              "wordId": "wd-intuitive"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "ly",
+              "role": "suffix",
+              "elementSenseId": "els-ly-manner"
+            }
+          ]
+        }
+      ],
+      "pronunciations": [],
+      "etymology": {
+        "summaryKo": "형용사 intuitive에 부사형 접미사 -ly가 붙어 만들어졌다.",
+        "summaryEn": "From intuitive + -ly.",
+        "originLanguages": [
+          "English"
+        ],
+        "sourceIds": [
+          "src-wiktionary",
+          "src-editorial"
+        ]
+      },
+      "familyHeadwordId": "wd-intuit",
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-intuitiveness",
+      "lemma": "intuitiveness",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-intuitiveness-1",
+          "ko": [
+            "직관적임",
+            "직관성"
+          ],
+          "en": [
+            "the state or quality of being intuitive"
+          ],
+          "concepts": [
+            "concept-state"
+          ]
+        }
+      ],
+      "forms": [],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-intuitive",
+          "transparency": "transparent",
+          "noteKo": "intuitive에 명사형 접미사 -ness가 붙었다."
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-intuitiveness-synchronic",
+          "wordSenseId": "wds-intuitiveness-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "intuitive + -ness가 결합해 직관적인 성질이나 상태를 나타내는 명사가 되었다.",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "intuitive",
+              "role": "base",
+              "wordId": "wd-intuitive"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "ness",
+              "role": "suffix",
+              "elementSenseId": "els-ness-state"
+            }
+          ]
+        }
+      ],
+      "pronunciations": [
+        {
+          "ipa": "/ɪnˈtjuːɪtɪvnəs/",
+          "variety": "",
+          "sourceId": "src-wiktionary"
+        }
+      ],
+      "etymology": {
+        "summaryKo": "형용사 intuitive에 상태·성질을 나타내는 접미사 -ness가 붙어 만들어졌다.",
+        "summaryEn": "From intuitive + -ness.",
+        "originLanguages": [
+          "English"
+        ],
+        "sourceIds": [
+          "src-wiktionary",
+          "src-editorial"
+        ]
+      },
+      "familyHeadwordId": "wd-intuit",
+      "sources": [
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-intuitable",
+      "lemma": "intuitable",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-intuitable-1",
+          "ko": [
+            "직관적으로 파악할 수 있는"
+          ],
+          "en": [
+            "capable of being intuitively sensed or understood"
+          ],
+          "concepts": [
+            "concept-possibility"
+          ]
+        }
+      ],
+      "forms": [
+        {
+          "form": "more intuitable",
+          "type": "comparative"
+        },
+        {
+          "form": "most intuitable",
+          "type": "superlative"
+        }
+      ],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-intuit",
+          "transparency": "transparent",
+          "noteKo": "intuit에 가능을 나타내는 접미사 -able이 붙었다."
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-intuitable-synchronic",
+          "wordSenseId": "wds-intuitable-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "intuit + -able이 결합해 직관적으로 파악할 수 있다는 뜻의 형용사가 되었다.",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "intuit",
+              "role": "base",
+              "wordId": "wd-intuit"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "able",
+              "role": "suffix",
+              "elementSenseId": "els-able-capable"
+            }
+          ]
+        }
+      ],
+      "pronunciations": [],
+      "etymology": {
+        "summaryKo": "동사 intuit에 가능을 나타내는 접미사 -able이 붙어 만들어졌다.",
+        "summaryEn": "From intuit + -able.",
+        "originLanguages": [
+          "English"
+        ],
+        "sourceIds": [
+          "src-wiktionary",
+          "src-editorial"
+        ]
+      },
+      "familyHeadwordId": "wd-intuit",
+      "sources": [
         "src-wiktionary",
         "src-editorial"
       ]
