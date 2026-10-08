@@ -22,6 +22,15 @@ const POS_LABELS = Object.freeze({
   adverb: '부사',
 });
 
+const ELEMENT_KIND_LABELS = Object.freeze({
+  prefix: '접두사',
+  suffix: '접미사',
+  root: '어근',
+  'combining-form': '결합형',
+  infix: '접요사',
+  circumfix: '환접사',
+});
+
 const FORM_LABELS = Object.freeze({
   'base-form': '기본형',
   singular: '단수형',
@@ -47,6 +56,10 @@ function posLabel(value = '') {
 
 function formLabel(value = '') {
   return FORM_LABELS[value] || value;
+}
+
+function elementKindLabel(value = '') {
+  return ELEMENT_KIND_LABELS[value] || value;
 }
 
 function relationLabel(value = '') {
@@ -138,9 +151,9 @@ function bestWordMatch(word, query, mode) {
   };
 
   if (mode !== 'meaning') {
-    consider(scoreText(query, word.lemma, { exact: 120, prefix: 92, includes: 65 }), '표제어 일치');
+    consider(scoreText(query, word.lemma, { exact: 140, prefix: 100, includes: 65 }), '표제어 일치');
     for (const form of word.forms) {
-      consider(scoreText(query, form.form, { exact: 114, prefix: 84, includes: 58 }), `활용형 ${form.form}을 통해 찾음`);
+      consider(scoreText(query, form.form, { exact: 134, prefix: 94, includes: 58 }), `활용형 ${form.form}을 통해 찾음`);
     }
     if (word.familyHeadwordId === word.id) {
       for (const member of state.familyMembers.get(word.id) || []) {
@@ -209,6 +222,94 @@ function search(query, mode = 'all', elementKind = 'all') {
   return results.sort((a, b) => b.score - a.score || a.entity.id.localeCompare(b.entity.id)).slice(0, 80);
 }
 
+function spellingKey(value = '') {
+  return loose(value).replace(/[^a-z]/g, '');
+}
+
+function editDistance(leftValue, rightValue) {
+  const left = spellingKey(leftValue);
+  const right = spellingKey(rightValue);
+  const rows = Array.from({ length: left.length + 1 }, () => Array(right.length + 1).fill(0));
+  for (let index = 0; index <= left.length; index += 1) rows[index][0] = index;
+  for (let index = 0; index <= right.length; index += 1) rows[0][index] = index;
+  for (let row = 1; row <= left.length; row += 1) {
+    for (let column = 1; column <= right.length; column += 1) {
+      const cost = left[row - 1] === right[column - 1] ? 0 : 1;
+      rows[row][column] = Math.min(
+        rows[row - 1][column] + 1,
+        rows[row][column - 1] + 1,
+        rows[row - 1][column - 1] + cost,
+      );
+      if (row > 1 && column > 1 && left[row - 1] === right[column - 2] && left[row - 2] === right[column - 1]) {
+        rows[row][column] = Math.min(rows[row][column], rows[row - 2][column - 2] + 1);
+      }
+    }
+  }
+  return rows[left.length][right.length];
+}
+
+function spellingSuggestions(query, mode = 'all', elementKind = 'all') {
+  const queryKey = spellingKey(query);
+  if (queryKey.length < 3) return { words: [], elements: [] };
+  const maxDistance = queryKey.length <= 4 ? 1 : queryKey.length <= 7 ? 2 : 3;
+  const wordSuggestions = [];
+  if (mode === 'all' || mode === 'word') {
+    for (const word of state.data.words) {
+      const aliases = [word.lemma, ...(word.forms || []).map((form) => form.form)].filter((value) => /^[A-Za-z'-]+$/.test(value));
+      const distance = Math.min(...aliases.map((value) => editDistance(queryKey, value)));
+      if (distance <= maxDistance) wordSuggestions.push({ entity: word, distance, lengthGap: Math.abs(spellingKey(word.lemma).length - queryKey.length) });
+    }
+  }
+  wordSuggestions.sort((left, right) => left.distance - right.distance || left.lengthGap - right.lengthGap || left.entity.lemma.localeCompare(right.entity.lemma, 'en'));
+  const words = wordSuggestions.slice(0, 5);
+
+  const elementSuggestions = [];
+  const suggestedElementIds = new Set();
+  const addElement = (element, distance, reason) => {
+    if (!element || suggestedElementIds.has(element.id) || (elementKind !== 'all' && element.kind !== elementKind)) return;
+    suggestedElementIds.add(element.id);
+    elementSuggestions.push({ entity: element, distance, reason });
+  };
+  if (mode === 'all' || mode === 'element') {
+    for (const element of state.data.elements) {
+      const aliases = [element.canonicalForm, ...element.allomorphs.map((allomorph) => allomorph.form)];
+      let bestDistance = Infinity;
+      let hasExactBoundary = false;
+      let longestAlias = 0;
+      for (const alias of aliases) {
+        const aliasKey = spellingKey(alias);
+        if (!aliasKey) continue;
+        longestAlias = Math.max(longestAlias, aliasKey.length);
+        hasExactBoundary ||= queryKey.startsWith(aliasKey) || queryKey.endsWith(aliasKey);
+        bestDistance = Math.min(bestDistance, editDistance(queryKey, aliasKey));
+        for (const delta of [-1, 0, 1]) {
+          const length = aliasKey.length + delta;
+          if (length >= 2 && queryKey.length >= length) bestDistance = Math.min(bestDistance, editDistance(queryKey.slice(-length), aliasKey));
+        }
+      }
+      if ((hasExactBoundary && bestDistance === 0) || (longestAlias >= 4 && bestDistance <= 1)) addElement(element, bestDistance, '철자 끝부분과 비슷한 형태소');
+    }
+    for (const suggestion of words.slice(0, 3)) {
+      for (const analysis of suggestion.entity.analyses || []) {
+        for (const part of analysis.parts || []) {
+          if (part.elementSenseId) addElement(elementForSense(part.elementSenseId), suggestion.distance, `${suggestion.entity.lemma}의 구성 형태소`);
+        }
+      }
+    }
+  }
+  elementSuggestions.sort((left, right) => left.distance - right.distance || left.entity.canonicalForm.localeCompare(right.entity.canonicalForm, 'en'));
+  return { words, elements: elementSuggestions.slice(0, 5) };
+}
+
+function renderSpellingSuggestions(query, suggestions) {
+  if (!suggestions.words.length && !suggestions.elements.length) return '';
+  return `<section class="suggestion-panel" aria-label="철자 추천">
+    <div class="suggestion-heading"><strong>혹시 이 항목을 찾으셨나요?</strong><span>‘${escapeHtml(query)}’과 철자가 가까운 결과입니다.</span></div>
+    ${suggestions.words.length ? `<div class="suggestion-group"><span>비슷한 단어</span><div class="suggestion-links">${suggestions.words.map(({ entity, distance }) => `<a href="#/word/${encodeHash(entity.id)}?from=${encodeHash(query)}"><strong>${escapeHtml(entity.lemma)}</strong><small>${entity.partOfSpeech.map(posLabel).join(' · ')} · ${distance}글자 차이</small></a>`).join('')}</div></div>` : ''}
+    ${suggestions.elements.length ? `<div class="suggestion-group"><span>관련 형태소</span><div class="suggestion-links">${suggestions.elements.map(({ entity, reason }) => `<a href="#/element/${encodeHash(entity.id)}?from=${encodeHash(query)}"><strong>${escapeHtml(entity.canonicalForm)}</strong><small>${escapeHtml(entity.kind)} · ${escapeHtml(reason)}</small></a>`).join('')}</div></div>` : ''}
+  </section>`;
+}
+
 function parseRoute() {
   const raw = location.hash.replace(/^#\/?/, '');
   const [pathPart = 'search', queryString = ''] = raw.split('?');
@@ -262,6 +363,9 @@ function renderSearch(route) {
   const mode = ['all', 'word', 'element', 'meaning'].includes(route.params.get('mode')) ? route.params.get('mode') : 'all';
   const kind = route.params.get('kind') || 'all';
   const results = search(query, mode, kind);
+  const hasStrongResult = results.some((result) => result.score >= 84);
+  const suggestions = query && !hasStrongResult ? spellingSuggestions(query, mode, kind) : { words: [], elements: [] };
+  const suggestionsHtml = renderSpellingSuggestions(query, suggestions);
   const kindOptions = ['all', 'prefix', 'suffix', 'root', 'combining-form'];
   const examples = ['running', 'availability', 'in-', '쓰다', 'life'];
   const reviewedWordCount = state.data.words.filter((word) => word.status !== 'draft').length;
@@ -297,7 +401,8 @@ function renderSearch(route) {
       </div>
       <p class="result-status" aria-live="polite">${query ? `<strong>‘${escapeHtml(query)}’</strong> 검색 결과 <b>${results.length}</b>개` : '검색어를 입력하거나 아래 사용 예시를 선택하세요.'}</p>
       <div class="results-list">
-        ${query && results.length ? results.map((result) => resultCard(result, query)).join('') : query ? `<div class="empty-state"><strong>‘${escapeHtml(query)}’을 현재 데이터에서 찾지 못했습니다.</strong><span>철자를 확인하거나 GitHub 데이터에 새 단어를 제안할 수 있습니다.</span></div>` : `<div class="search-help-grid">
+        ${suggestionsHtml}
+        ${query && results.length ? results.map((result) => resultCard(result, query)).join('') : query && suggestionsHtml ? '' : query ? `<div class="empty-state"><strong>‘${escapeHtml(query)}’을 현재 데이터에서 찾지 못했습니다.</strong><span>추천 결과도 없다면 GitHub 데이터에 새 단어를 제안할 수 있습니다.</span></div>` : `<div class="search-help-grid">
           <button type="button" data-query="running"><strong>활용형으로 찾기</strong><span>running을 검색하면 사전형 run과 변화형을 확인합니다.</span></button>
           <button type="button" data-query="availability"><strong>파생어 살펴보기</strong><span>available → availability의 품사 변화를 확인합니다.</span></button>
           <button type="button" data-query="in-"><strong>형태소로 모아보기</strong><span>in-, im-, il-, ir-가 쓰인 단어를 의미별로 봅니다.</span></button>
@@ -422,10 +527,11 @@ function renderVerbTenseAspectTable(word) {
   </div>`;
 }
 
-function wordFormGroups(word) {
+function wordFormGroups(word, { includeVerb = true } = {}) {
   const groups = [];
   const usedTypes = new Set();
   const forms = word.forms || [];
+  const verbTypes = new Set(['third-person', 'past', 'past-participle', 'present-participle']);
   const byTypes = (types) => forms.filter((form) => types.includes(form.type));
 
   if (word.partOfSpeech.includes('noun')) {
@@ -440,7 +546,7 @@ function wordFormGroups(word) {
     }
   }
 
-  if (word.partOfSpeech.includes('verb')) {
+  if (includeVerb && word.partOfSpeech.includes('verb')) {
     const tenseForms = byTypes(['third-person', 'past']);
     if (tenseForms.length) {
       tenseForms.forEach((form) => usedTypes.add(form.type));
@@ -473,9 +579,39 @@ function wordFormGroups(word) {
     }
   }
 
-  const remaining = forms.filter((form) => !usedTypes.has(form.type));
+  const remaining = forms.filter((form) => !usedTypes.has(form.type) && (includeVerb || !verbTypes.has(form.type)));
   if (remaining.length) groups.push({ title: '기타 형태', description: '그 밖의 문법적·철자 형태', entries: remaining });
   return groups;
+}
+
+function renderFormGroups(word, groups) {
+  if (!groups.length) return '';
+  return `<div class="form-groups">${groups.map((group) => `<div class="form-group">
+    <div class="form-group-heading"><h3>${escapeHtml(group.title)}</h3><span>${escapeHtml(group.description)}</span></div>
+    <div class="inflection-grid">${group.entries.map((form) => `<a href="#/word/${encodeHash(word.id)}?from=${encodeHash(form.form)}" class="inflection-card"><strong>${escapeHtml(form.form)}</strong><span>${escapeHtml(formLabel(form.type))}</span></a>`).join('')}</div>
+  </div>`).join('')}</div>`;
+}
+
+function renderPrincipalParts(word) {
+  const parts = verbPrincipalParts(word);
+  if (!parts) return '';
+  return `<div class="principal-strip">
+    <span class="principal-heading">주요 동사 변화</span>
+    <span class="principal-line"><strong>${escapeHtml(parts[0])}</strong><i>–</i><strong>${escapeHtml(parts[1])}</strong><i>–</i><strong>${escapeHtml(parts[2])}</strong></span>
+    <span class="principal-caption">기본형 · 과거형 · 과거분사</span>
+  </div>`;
+}
+
+function renderGrammarContent(word) {
+  const isVerb = word.partOfSpeech.includes('verb');
+  const rows = verbTenseAspectRows(word);
+  const nonVerbGroups = wordFormGroups(word, { includeVerb: !isVerb });
+  const verbForms = isVerb ? [{ form: word.lemma, type: 'base-form' }, ...(word.forms || []).filter((form) => ['third-person', 'past', 'past-participle', 'present-participle'].includes(form.type))] : [];
+  const verbBlock = isVerb ? `${renderPrincipalParts(word)}
+    ${rows.length ? renderVerbTenseAspectTable(word) : '<div class="grammar-notice"><strong>시제표 준비 중</strong><span>12시제 표에 필요한 동사 변화형이 모두 등록되면 같은 형식으로 표시됩니다.</span></div>'}
+    ${verbForms.length > 1 ? `<details class="verb-forms-details"><summary>등록된 동사 변화형 ${verbForms.length}개 보기</summary><div class="inflection-grid">${verbForms.map((form) => `<a href="#/word/${encodeHash(word.id)}?from=${encodeHash(form.form)}" class="inflection-card"><strong>${escapeHtml(form.form)}</strong><span>${escapeHtml(formLabel(form.type))}</span></a>`).join('')}</div></details>` : ''}` : '';
+  const otherBlock = renderFormGroups(word, nonVerbGroups);
+  return verbBlock || otherBlock ? `${verbBlock}${otherBlock}` : '<div class="consistent-empty"><strong>별도 활용형이 없습니다.</strong><span>현재 표제어 외에 등록된 문법적 변화가 없는 항목입니다.</span></div>'; 
 }
 
 function categoryChangeText(fromWord, toWord) {
@@ -495,24 +631,35 @@ function familyRelationCard(fromWord, toWord, relation, linkedWord) {
 function renderAnalysis(analysis) {
   const parts = analysis.parts.map((part, index) => {
     let href = '#/search';
-    let label = part.role;
+    let displayForm = part.surface;
+    let kind = part.role === 'base' ? '기본 단어' : part.role;
+    let meaning = '';
     if (part.elementSenseId) {
       const element = elementForSense(part.elementSenseId);
       const sense = senseById(part.elementSenseId);
       href = `#/element/${encodeHash(element.id)}?sense=${encodeHash(part.elementSenseId)}`;
-      label = `${element.kind} · ${sense.glossKo[0]}`;
+      displayForm = element.canonicalForm;
+      kind = elementKindLabel(element.kind);
+      meaning = sense.glossKo[0];
     } else if (part.wordId) {
       const base = state.words.get(part.wordId);
       href = `#/word/${encodeHash(part.wordId)}`;
-      label = `base word · ${base?.lemma || part.wordId}`;
+      displayForm = base?.lemma || part.surface;
+      meaning = base?.meanings?.[0]?.ko?.[0] || '';
     }
-    return `${index ? '<span class="plus" aria-hidden="true">+</span>' : ''}<a class="part-card" href="${href}"><span class="part-surface">${escapeHtml(part.surface)}</span><span class="part-label">${escapeHtml(label)}</span>${part.boundaryChangeNote ? `<span class="part-label">${escapeHtml(part.boundaryChangeNote)}</span>` : ''}</a>`;
+    return `${index ? '<span class="plus" aria-hidden="true">+</span>' : ''}<a class="part-card" href="${href}">
+      <span class="part-kind">${escapeHtml(kind)}</span>
+      <span class="part-surface">${escapeHtml(displayForm)}</span>
+      ${displayForm !== part.surface || part.elementSenseId ? `<span class="part-form">단어 속 형태 ${escapeHtml(part.surface)}</span>` : ''}
+      ${meaning ? `<span class="part-label">${escapeHtml(meaning)}</span>` : ''}
+      ${part.boundaryChangeNote ? `<span class="part-label">${escapeHtml(part.boundaryChangeNote)}</span>` : ''}
+    </a>`;
   }).join('');
-  return `<div class="sense-card">
-    <div class="badges">${badge(analysis.mode)}${badge(analysis.transparency)}</div>
+  return `<article class="analysis-card">
+    <div class="analysis-heading"><span>구조 분석</span><div class="badges">${badge(analysis.mode)}${badge(analysis.transparency)}</div></div>
     <div class="decomposition">${parts}</div>
     <p>${escapeHtml(analysis.explanationKo)}</p>
-  </div>`;
+  </article>`;
 }
 
 function renderWord(route) {
@@ -522,9 +669,8 @@ function renderWord(route) {
   const matchedForm = from && normalize(from) !== normalize(word.lemma) && word.forms.find((form) => normalize(form.form) === normalize(from));
   const family = wordFamily(word);
   const familyGroup = familyOverview(word);
-  const principalParts = verbPrincipalParts(word);
-  const formGroups = wordFormGroups(word);
-  const formCount = formGroups.reduce((count, group) => count + group.entries.length, 0);
+  const formCount = (word.forms || []).length;
+  const grammarContent = renderGrammarContent(word);
   const usedSenseIds = unique(word.analyses.flatMap((analysis) => analysis.parts.map((part) => part.elementSenseId)));
   const relatedGroups = usedSenseIds.map((senseId) => {
     const sense = senseById(senseId);
@@ -552,7 +698,7 @@ function renderWord(route) {
       ${matchedForm ? `<p class="from-note"><strong>${escapeHtml(matchedForm.form)}</strong>은 <strong>${escapeHtml(word.lemma)}</strong>의 ${escapeHtml(formLabel(matchedForm.type))}입니다.</p>` : ''}
 
       <nav class="entry-nav" aria-label="상세 항목">
-        <button type="button" data-scroll-target="meaning">뜻</button><button type="button" data-scroll-target="etymology">어원</button><button type="button" data-scroll-target="forms">형태 변화</button><button type="button" data-scroll-target="family">단어 가족</button><button type="button" data-scroll-target="structure">단어 구조</button>
+        <button type="button" data-scroll-target="meaning">뜻</button><button type="button" data-scroll-target="structure">단어 구조</button><button type="button" data-scroll-target="etymology">어원</button><button type="button" data-scroll-target="forms">문법·활용</button><button type="button" data-scroll-target="family">단어 가족</button>
       </nav>
 
       <section class="entry-section" id="meaning">
@@ -560,45 +706,34 @@ function renderWord(route) {
         <ol class="definition-list">${word.meanings.map((meaning) => `<li><span class="definition-ko">${escapeHtml(meaning.ko.join(', '))}</span><span class="definition-en">${escapeHtml(meaning.en.join('; '))}</span></li>`).join('')}</ol>
       </section>
 
+      <section class="entry-section structure-section" id="structure">
+        <div class="section-heading"><h2>단어 구조</h2><span>형태소와 기본 단어</span></div>
+        ${word.analyses.length ? word.analyses.map(renderAnalysis).join('') : `<div class="consistent-empty"><strong>검수된 구조 분석이 아직 없습니다.</strong><span>${isImported ? '자동 수집 단어는 잘못된 분해를 피하기 위해 검수 전에는 구조를 추측하지 않습니다.' : '더 작은 학습용 요소로 나누지 않는 기본 단어입니다.'}</span></div>`}
+      </section>
+
       <section class="entry-section etymology-section" id="etymology">
         <div class="section-heading"><h2>어원</h2><span>${word.etymology?.originLanguages?.map(escapeHtml).join(' → ') || '개별 검수 전'}</span></div>
-        ${word.etymology ? `<p class="etymology-ko">${escapeHtml(word.etymology.summaryKo)}</p>${word.etymology.summaryEn ? `<p class="etymology-en">${escapeHtml(word.etymology.summaryEn)}</p>` : ''}` : '<p class="muted">자동 수집 단어의 어원은 아직 연결되지 않았습니다.</p>'}
+        ${word.etymology ? `<p class="etymology-ko">${escapeHtml(word.etymology.summaryKo)}</p>${word.etymology.summaryEn ? `<p class="etymology-en">${escapeHtml(word.etymology.summaryEn)}</p>` : ''}` : '<div class="consistent-empty"><strong>검수된 어원 설명이 아직 없습니다.</strong><span>자동 수집된 정의와 활용형은 제공하지만 어원 방향은 검수 후 연결합니다.</span></div>'}
       </section>
 
       <section class="entry-section forms-section" id="forms">
-        <div class="section-heading"><h2>형태 변화</h2><span>${formCount}개 형태</span></div>
-        ${principalParts ? `<div class="principal-strip">
-          <span class="principal-heading">주요 동사 변화</span>
-          <span class="principal-line"><strong>${escapeHtml(principalParts[0])}</strong><i>–</i><strong>${escapeHtml(principalParts[1])}</strong><i>–</i><strong>${escapeHtml(principalParts[2])}</strong></span>
-          <span class="principal-caption">기본형 · 과거형 · 과거분사</span>
-        </div>` : ''}
-        ${renderVerbTenseAspectTable(word)}
-        ${formGroups.length ? `<div class="form-groups">${formGroups.map((group) => `<div class="form-group">
-          <div class="form-group-heading"><h3>${escapeHtml(group.title)}</h3><span>${escapeHtml(group.description)}</span></div>
-          <div class="inflection-grid">${group.entries.map((form) => `<a href="#/word/${encodeHash(word.id)}?from=${encodeHash(form.form)}" class="inflection-card"><strong>${escapeHtml(form.form)}</strong><span>${escapeHtml(formLabel(form.type))}</span></a>`).join('')}</div>
-        </div>`).join('')}</div>` : '<p class="muted">별도로 등록된 형태 변화가 없습니다.</p>'}
+        <div class="section-heading"><h2>문법·활용</h2><span>등록 변화형 ${formCount}개</span></div>
+        ${grammarContent}
       </section>
 
       <section class="entry-section" id="family">
         <div class="section-heading"><h2>단어 가족</h2><span>${familyGroup.members.length > 1 ? `${familyGroup.members.length}개 단어 가족` : '파생 관계'}</span></div>
         ${familyGroup.members.length > 1 ? `<div class="family-root-nav"><span>가족 대표 표제어</span><a href="#/word/${encodeHash(familyGroup.headword.id)}"><strong>${escapeHtml(familyGroup.headword.lemma)}</strong></a></div>
           ${familyGroup.headword.familySummaryKo ? `<p class="family-summary">${escapeHtml(familyGroup.headword.familySummaryKo)}</p>` : ''}
-          <div class="family-member-grid">${familyGroup.members.map((member) => renderFamilyMemberCard(member, word)).join('')}</div>` : `<p class="section-description">접사가 붙거나 품사가 달라져 만들어진 새 단어입니다.</p>
-          <div class="family-relations">
+          <div class="family-member-grid">${familyGroup.members.map((member) => renderFamilyMemberCard(member, word)).join('')}</div>` : family.parents.length || family.children.length ? `<div class="family-relations">
             ${family.parents.map(({ word: parent, relation }) => familyRelationCard(parent, word, relation, parent)).join('')}
             ${family.children.map(({ word: child, relation }) => familyRelationCard(word, child, relation, child)).join('')}
-            ${!family.parents.length && !family.children.length ? '<p class="muted">등록된 직접 파생 관계가 없습니다.</p>' : ''}
-          </div>`}
-      </section>
-
-      <section class="entry-section" id="structure">
-        <h2>단어 구조</h2>
-        ${word.analyses.length ? word.analyses.map(renderAnalysis).join('') : '<p class="muted">현재 더 작은 학습용 요소로 분석하지 않은 기본 단어입니다.</p>'}
+          </div>` : '<div class="consistent-empty"><strong>연결된 단어 가족이 아직 없습니다.</strong><span>검수된 파생 관계가 추가되면 같은 위치에 표시됩니다.</span></div>'}
       </section>
 
       <section class="entry-section">
-        <h2>같은 형태소 의미를 쓰는 단어</h2>
-        ${relatedGroups.length ? relatedGroups.map(({senseId, sense, element, related}) => `<div class="sense-card"><h3><a href="#/element/${encodeHash(element.id)}?sense=${encodeHash(senseId)}">${escapeHtml(element.canonicalForm)}</a> · ${escapeHtml(sense.glossKo.join(', '))}</h3>${related.length ? `<div class="chip-list">${related.map((candidate) => `<a class="chip" href="#/word/${encodeHash(candidate.id)}">${escapeHtml(candidate.lemma)}</a>`).join('')}</div>` : '<p class="muted">다른 예시가 아직 없습니다.</p>'}</div>`).join('') : '<p class="muted">연결된 형태소 의미가 없습니다.</p>'}
+        <div class="section-heading"><h2>형태소 연결</h2><span>같은 의미 요소를 쓰는 단어</span></div>
+        ${relatedGroups.length ? relatedGroups.map(({senseId, sense, element, related}) => `<div class="sense-card"><h3><a href="#/element/${encodeHash(element.id)}?sense=${encodeHash(senseId)}">${escapeHtml(element.canonicalForm)}</a> · ${escapeHtml(sense.glossKo.join(', '))}</h3>${related.length ? `<div class="chip-list">${related.map((candidate) => `<a class="chip" href="#/word/${encodeHash(candidate.id)}">${escapeHtml(candidate.lemma)}</a>`).join('')}</div>` : '<p class="muted">다른 예시가 아직 없습니다.</p>'}</div>`).join('') : '<div class="consistent-empty"><strong>연결된 형태소가 아직 없습니다.</strong><span>구조 분석이 등록되면 관련 접사와 어근을 이곳에서 탐색할 수 있습니다.</span></div>'}
       </section>
 
       <section class="entry-section source-section"><h2>출처</h2>${sourceLinks(word.sources)}</section>

@@ -19,10 +19,12 @@ https://shynewsky.github.io/english-word-elements/
 - Searches canonical morphemes and allomorphs such as `in-`, `im-`, `il-`, `ir-`
 - Groups example words by the exact sense of a word element
 - Searches Korean and English meanings
+- Suggests nearby words and their morphemes when a query is misspelled
+- Uses the same meaning → structure → etymology → grammar → family layout for every word
 - Distinguishes synchronic and etymological analyses
 - Displays source and license information
 
-Version 0.4 serves 5,032 unique entries: 33 curated words and 4,999 currently loaded automatic entries, plus 18 reviewed word elements. OEWN pronunciation and derivational links enrich the automatic layer; detailed morpheme and etymology analyses remain reviewed data. Imported entries are clearly labelled `자동 수집`.
+Version 0.5 serves 5,036 unique entries: 37 curated words and 4,999 currently loaded automatic entries, plus 23 reviewed word elements. OEWN pronunciation and derivational links enrich the automatic layer; detailed morpheme and etymology analyses remain reviewed data. Imported entries are clearly labelled `자동 수집`.
 
 ## Architecture
 
