@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://shynewsky.github.io/00-english-word-elements/schemas/imported-words.schema.json",
+  "$id": "https://shynewsky.github.io/english-word-elements/schemas/imported-words.schema.json",
   "title": "Generated imported word records",
   "type": "object",
   "required": ["meta", "words"],
