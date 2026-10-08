@@ -27,7 +27,7 @@ https://shynewsky.github.io/english-word-elements/
 - Distinguishes synchronic and etymological analyses
 - Displays source and license information
 
-Version 0.7 reports unique headwords separately from part-of-speech records. The pre-refresh snapshot contains 4,309 visible headwords across 5,037 POS-specific records, including 38 curated records and 24 reviewed word elements. The refresh pipeline no longer truncates a ranked top-N subset; it retains every entry that satisfies the documented source rule. Imported entries remain clearly labelled `자동 수집`.
+Version 0.7 reports unique headwords separately from part-of-speech records. The regenerated snapshot contains 11,837 visible headwords across 15,618 POS-specific records: 38 curated records, 15,580 automatic records and 24 reviewed word elements. The refresh pipeline no longer truncates a ranked top-N subset; it retains every entry that satisfies the documented source rule. Imported entries remain clearly labelled `자동 수집`.
 
 ## Architecture
 
