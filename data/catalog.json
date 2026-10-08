@@ -3,7 +3,7 @@
     "project": "English Word Elements",
     "repository": "english-word-elements",
     "schemaVersion": 1,
-    "dataVersion": "0.5.0",
+    "dataVersion": "0.5.1",
     "language": "en",
     "interfaceLanguages": [
       "ko",
@@ -3568,6 +3568,17 @@
           ],
           "en": [
             "the appearance or representation of depth and relative distance"
+          ],
+          "concepts": []
+        },
+        {
+          "id": "wds-perspective-3",
+          "ko": [
+            "원근법의",
+            "관점에 관한"
+          ],
+          "en": [
+            "of, in, or relating to perspective"
           ],
           "concepts": []
         }
