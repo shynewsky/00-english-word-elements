@@ -8,7 +8,7 @@
       "format": "ZIP of JSON files",
       "downloadBytes": 9986555,
       "license": "CC BY 4.0",
-      "use": ["lemma", "part of speech", "English definitions"]
+      "use": ["lemma", "part of speech", "English definitions", "IPA pronunciation", "derivational lexical relations"]
     },
     {
       "id": "src-kowiktionary",
@@ -30,8 +30,8 @@
     }
   ],
   "selection": {
-    "rule": "English single-word entries with the same normalized lemma and part of speech in OEWN and Korean Wiktionary",
-    "priority": "Entries also present in Simple English Wiktionary, then lowercase and shorter lemmas",
+    "rule": "English single-word OEWN entries with Korean glosses matched first by lemma and part of speech, then by lemma when the Korean source has an unknown part of speech",
+    "priority": "Entries also present in Simple English Wiktionary, then lowercase and shorter lemmas; family links are retained when both records are available",
     "limit": 5000,
     "reviewStatus": "draft"
   }
