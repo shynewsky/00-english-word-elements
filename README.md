@@ -20,13 +20,14 @@ https://shynewsky.github.io/english-word-elements/
 - Groups verified word connections by the exact sense of a word element
 - Separates reviewed morphology from collapsed spelling-only candidates
 - Merges same-lemma part-of-speech records in search results
-- Searches headwords, forms, Korean and English meanings without flooding exact matches with definition substrings
+- Treats an English single-word query as a headword/form lookup instead of silently substituting definition-sentence matches
+- Keeps English definition search in the explicit `뜻` mode while Korean queries continue to search meanings directly
 - Suggests nearby words and their morphemes when a query is misspelled
 - Uses the same meaning → structure → etymology → grammar → family layout for every word
 - Distinguishes synchronic and etymological analyses
 - Displays source and license information
 
-Version 0.6 serves 5,037 unique entries: 38 curated words and 4,999 currently loaded automatic entries, plus 24 reviewed word elements. Each reviewed element sense now has verified reverse links to words, while spelling-only candidates are kept separate and clearly marked as unverified. OEWN pronunciation and derivational links enrich the automatic layer; detailed morpheme and etymology analyses remain reviewed data. Imported entries are clearly labelled `자동 수집`.
+Version 0.7 reports unique headwords separately from part-of-speech records. The pre-refresh snapshot contains 4,309 visible headwords across 5,037 POS-specific records, including 38 curated records and 24 reviewed word elements. The refresh pipeline no longer truncates a ranked top-N subset; it retains every entry that satisfies the documented source rule. Imported entries remain clearly labelled `자동 수집`.
 
 ## Architecture
 
@@ -46,13 +47,13 @@ static HTML, CSS and JavaScript
 GitHub Pages
 ```
 
-There is no server database. Reviewable JSON remains in Git. GitHub Actions validates referential integrity, deploys the static artifact, and can refresh the imported lexicon monthly through a review pull request.
+There is no server database or parameterized REST/GraphQL API. The two deployed JSON files are the public read assets; browser JavaScript performs search and joins locally. Reviewable JSON remains in Git, and GitHub Actions validates referential integrity, deploys the static artifact, and can refresh the imported lexicon through a review pull request.
 
 ## Repository structure
 
 ```text
 data/catalog.json              reviewed editorial data
-data/imported-words.json        current 5,000-word draft lexicon (refresh cap: 6,000)
+data/imported-words.json        generated draft lexicon with no arbitrary top-N cap
 imports/source-manifest.json    source versions, sizes and selection rules
 schemas/catalog.schema.json     structural schema
 scripts/import-lexicon.mjs      public dump normalizer and importer
@@ -102,6 +103,9 @@ The validator checks:
 - inflection versus derivation separation
 - derivational cycles
 - source references
+- individual form records and allowed form types
+- analysis modes, transparency, roles and parent references
+- absence of comma-joined multi-surface forms
 
 ## Contributing
 

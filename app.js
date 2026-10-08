@@ -9,6 +9,7 @@ const state = {
   sources: new Map(),
   familyMembers: new Map(),
   elementUsagesByWord: new Map(),
+  searchStats: { lemmaCount: 0 },
 };
 
 const normalize = (value = '') => value.normalize('NFKC').trim().toLocaleLowerCase('en');
@@ -116,6 +117,7 @@ function initMaps(data) {
   state.elementSenses = new Map();
   state.familyMembers = new Map();
   state.elementUsagesByWord = new Map();
+  state.searchStats = { lemmaCount: new Set(data.words.map((word) => normalize(word.lemma))).size };
   for (const word of data.words) {
     if (!word.familyHeadwordId) continue;
     if (!state.familyMembers.has(word.familyHeadwordId)) state.familyMembers.set(word.familyHeadwordId, []);
@@ -185,7 +187,17 @@ function textMatchKind(query, value, useLoose = false) {
   return 'none';
 }
 
-function bestWordMatch(word, query, mode) {
+function searchIntent(query, mode) {
+  const value = query.trim();
+  const englishToken = /^[A-Za-z][A-Za-z'’-]*$/.test(value);
+  const koreanText = /[가-힣]/.test(value);
+  return {
+    englishToken,
+    includeMeanings: mode === 'meaning' || koreanText || /\s/.test(value),
+  };
+}
+
+function bestWordMatch(word, query, mode, includeMeanings) {
   let best = { score: 0, reason: '', familyMember: null, matchKind: 'none' };
   const consider = (score, reason, familyMember = null, matchKind = 'other') => {
     if (score > best.score) best = { score, reason, familyMember, matchKind };
@@ -230,18 +242,20 @@ function bestWordMatch(word, query, mode) {
     }
   }
 
-  for (const meaning of word.meanings) {
-    for (const text of [...meaning.ko, ...meaning.en]) {
-      consider(scoreText(query, text, { exact: 98, prefix: 84, includes: 72 }), `단어 뜻 '${text}'와 일치`, null, 'meaning');
-    }
-    for (const text of conceptText(meaning.concepts, 'ko').concat(conceptText(meaning.concepts, 'en'))) {
-      consider(scoreText(query, text, { exact: 94, prefix: 78, includes: 68 }), `의미 개념 '${text}'와 일치`, null, 'meaning');
+  if (includeMeanings) {
+    for (const meaning of word.meanings) {
+      for (const text of [...meaning.ko, ...meaning.en]) {
+        consider(scoreText(query, text, { exact: 98, prefix: 84, includes: 72 }), `단어 뜻 '${text}'와 일치`, null, 'meaning');
+      }
+      for (const text of conceptText(meaning.concepts, 'ko').concat(conceptText(meaning.concepts, 'en'))) {
+        consider(scoreText(query, text, { exact: 94, prefix: 78, includes: 68 }), `의미 개념 '${text}'와 일치`, null, 'meaning');
+      }
     }
   }
   return best;
 }
 
-function bestElementMatch(element, query, mode) {
+function bestElementMatch(element, query, mode, includeMeanings) {
   let best = { score: 0, reason: '', matchKind: 'none' };
   const consider = (score, reason, matchKind = 'other') => {
     if (score > best.score) best = { score, reason, matchKind };
@@ -254,12 +268,14 @@ function bestElementMatch(element, query, mode) {
     }
   }
 
-  for (const sense of element.senses) {
-    for (const text of [...sense.glossKo, ...sense.glossEn]) {
-      consider(scoreText(query, text, { exact: 102, prefix: 86, includes: 74 }), `형태소 뜻 '${text}'와 일치`, 'meaning');
-    }
-    for (const text of conceptText(sense.concepts, 'ko').concat(conceptText(sense.concepts, 'en'))) {
-      consider(scoreText(query, text, { exact: 100, prefix: 82, includes: 70 }), `의미 개념 '${text}'와 일치`, 'meaning');
+  if (includeMeanings) {
+    for (const sense of element.senses) {
+      for (const text of [...sense.glossKo, ...sense.glossEn]) {
+        consider(scoreText(query, text, { exact: 102, prefix: 86, includes: 74 }), `형태소 뜻 '${text}'와 일치`, 'meaning');
+      }
+      for (const text of conceptText(sense.concepts, 'ko').concat(conceptText(sense.concepts, 'en'))) {
+        consider(scoreText(query, text, { exact: 100, prefix: 82, includes: 70 }), `의미 개념 '${text}'와 일치`, 'meaning');
+      }
     }
   }
   return best;
@@ -268,16 +284,17 @@ function bestElementMatch(element, query, mode) {
 function search(query, mode = 'all', elementKind = 'all') {
   if (!query.trim()) return [];
   let results = [];
+  const intent = searchIntent(query, mode);
   if (mode === 'all' || mode === 'word' || mode === 'meaning') {
     for (const word of state.data.words) {
-      const match = bestWordMatch(word, query, mode);
+      const match = bestWordMatch(word, query, mode, intent.includeMeanings);
       if (match.score > 0) results.push({ type: 'word', entity: word, ...match });
     }
   }
   if (mode === 'all' || mode === 'element' || mode === 'meaning') {
     for (const element of state.data.elements) {
       if (elementKind !== 'all' && element.kind !== elementKind) continue;
-      const match = bestElementMatch(element, query, mode);
+      const match = bestElementMatch(element, query, mode, intent.includeMeanings);
       if (match.score > 0) results.push({ type: 'element', entity: element, ...match });
     }
   }
@@ -341,7 +358,7 @@ function editDistance(leftValue, rightValue) {
 function spellingSuggestions(query, mode = 'all', elementKind = 'all') {
   const queryKey = spellingKey(query);
   if (queryKey.length < 3) return { words: [], elements: [] };
-  const maxDistance = queryKey.length <= 4 ? 1 : queryKey.length <= 7 ? 2 : 3;
+  const maxDistance = queryKey.length <= 4 ? 1 : 2;
   const wordSuggestions = [];
   if (mode === 'all' || mode === 'word') {
     for (const word of state.data.words) {
@@ -351,7 +368,15 @@ function spellingSuggestions(query, mode = 'all', elementKind = 'all') {
     }
   }
   wordSuggestions.sort((left, right) => left.distance - right.distance || left.lengthGap - right.lengthGap || left.entity.lemma.localeCompare(right.entity.lemma, 'en'));
-  const words = wordSuggestions.slice(0, 5);
+  const words = [];
+  const suggestedLemmaKeys = new Set();
+  for (const suggestion of wordSuggestions) {
+    const lemmaKey = normalize(suggestion.entity.lemma);
+    if (suggestedLemmaKeys.has(lemmaKey)) continue;
+    suggestedLemmaKeys.add(lemmaKey);
+    words.push(suggestion);
+    if (words.length >= 5) break;
+  }
 
   const elementSuggestions = [];
   const suggestedElementIds = new Set();
@@ -426,12 +451,13 @@ function resultCard(result, query) {
     const combinedPartsOfSpeech = unique(variants.flatMap((variant) => variant.partOfSpeech));
     const isFamilyResult = Boolean(result.familyMember);
     const familyMembers = state.familyMembers.get(word.id) || [];
+    const combinedGlosses = unique(variants.flatMap((variant) => variant.meanings.flatMap((meaning) => meaning.ko))).slice(0, 4);
     const href = `#/word/${encodeHash(word.id)}?from=${encodeHash(query)}`;
     return `<a class="result-row${isFamilyResult ? ' family-result' : ''}" href="${href}">
       <span class="result-kind${isFamilyResult ? ' family' : ''}">${isFamilyResult ? '단어 가족' : '단어'}</span>
       <span class="result-entry">
         <span class="result-title-line"><strong>${escapeHtml(word.lemma)}</strong>${combinedPartsOfSpeech.map((pos) => `<span class="pos-label">${escapeHtml(posLabel(pos))}</span>`).join('')}${variants.length > 1 ? `<span class="merged-label">${variants.length}개 품사 레코드 통합</span>` : ''}</span>
-        <span class="result-gloss">${isFamilyResult ? escapeHtml(familyMembers.map((member) => member.lemma).join(' · ')) : escapeHtml(word.meanings[0]?.ko?.join(', ') || '')}</span>
+        <span class="result-gloss">${isFamilyResult ? escapeHtml(familyMembers.map((member) => member.lemma).join(' · ')) : escapeHtml(combinedGlosses.join(', '))}</span>
         <span class="match-reason">${escapeHtml(result.reason)}</span>
       </span>
       <span class="result-arrow" aria-hidden="true">›</span>
@@ -455,13 +481,18 @@ function renderSearch(route) {
   const mode = ['all', 'word', 'element', 'meaning'].includes(route.params.get('mode')) ? route.params.get('mode') : 'all';
   const kind = route.params.get('kind') || 'all';
   const results = search(query, mode, kind);
+  const intent = searchIntent(query, mode);
   const hasStrongResult = results.some((result) => result.score >= 84);
+  const hasDirectMatch = results.some((result) => ['exact', 'form', 'family', 'morphology'].includes(result.matchKind));
+  const exactLookupMissing = Boolean(query && intent.englishToken && mode !== 'meaning' && !hasDirectMatch);
   const suggestions = query && !hasStrongResult ? spellingSuggestions(query, mode, kind) : { words: [], elements: [] };
   const suggestionsHtml = renderSpellingSuggestions(query, suggestions);
+  const lookupNoticeHtml = exactLookupMissing ? `<div class="lookup-notice"><strong>‘${escapeHtml(query)}’ 표제어는 현재 데이터에 없습니다.</strong><span>아래 항목이 있다면 철자 시작 일치 결과이며, 영어 정의 문장 검색은 <button type="button" data-switch-meaning>뜻 검색</button>에서 분리해 확인할 수 있습니다.</span></div>` : '';
   const kindOptions = ['all', 'prefix', 'suffix', 'root', 'combining-form'];
   const examples = ['running', 'availability', 'in-', '쓰다', 'life'];
   const reviewedWordCount = state.data.words.filter((word) => word.status !== 'draft').length;
   const importedWordCount = state.data.words.length - reviewedWordCount;
+  const lemmaCount = state.searchStats.lemmaCount;
 
   app.innerHTML = `<div class="page search-page">
     <section class="dictionary-masthead">
@@ -477,7 +508,7 @@ function renderSearch(route) {
         <span>추천 검색</span>
         ${examples.map((example) => `<button type="button" data-query="${escapeHtml(example)}">${escapeHtml(example)}</button>`).join('')}
       </div>
-      <div class="sample-banner"><strong>확장 사전 데이터</strong><span>${state.data.words.length.toLocaleString('ko-KR')}개 단어 · ${state.data.elements.length}개 형태소 · 검수 ${reviewedWordCount.toLocaleString('ko-KR')}개 · 자동 수집 ${importedWordCount.toLocaleString('ko-KR')}개</span></div>
+      <div class="sample-banner"><strong>확장 사전 데이터</strong><span>${lemmaCount.toLocaleString('ko-KR')}개 표제어 · ${state.data.words.length.toLocaleString('ko-KR')}개 품사별 항목 · ${state.data.elements.length}개 형태소 · 검수 ${reviewedWordCount.toLocaleString('ko-KR')}개 · 자동 수집 ${importedWordCount.toLocaleString('ko-KR')}개</span></div>
     </section>
 
     <section class="search-results-panel" aria-label="검색 결과">
@@ -491,10 +522,11 @@ function renderSearch(route) {
           </select>
         </label>
       </div>
-      <p class="result-status" aria-live="polite">${query ? `<strong>‘${escapeHtml(query)}’</strong> 검색 결과 <b>${results.length}</b>개` : '검색어를 입력하거나 아래 사용 예시를 선택하세요.'}</p>
+      <p class="result-status" aria-live="polite">${query ? `<strong>‘${escapeHtml(query)}’</strong> 직접 검색 결과 <b>${results.length}</b>개` : '검색어를 입력하거나 아래 사용 예시를 선택하세요.'}</p>
       <div class="results-list">
+        ${lookupNoticeHtml}
         ${suggestionsHtml}
-        ${query && results.length ? results.map((result) => resultCard(result, query)).join('') : query && suggestionsHtml ? '' : query ? `<div class="empty-state"><strong>‘${escapeHtml(query)}’을 현재 데이터에서 찾지 못했습니다.</strong><span>추천 결과도 없다면 GitHub 데이터에 새 단어를 제안할 수 있습니다.</span></div>` : `<div class="search-help-grid">
+        ${query && results.length ? results.map((result) => resultCard(result, query)).join('') : query && suggestionsHtml ? '' : query ? `<div class="empty-state"><strong>‘${escapeHtml(query)}’ 표제어를 현재 데이터에서 찾지 못했습니다.</strong><span>정의 속 언급을 찾으려면 뜻 검색을 사용하세요. 표제어가 빠졌다면 수집 대상 자체를 보강해야 합니다.</span></div>` : `<div class="search-help-grid">
           <button type="button" data-query="running"><strong>활용형으로 찾기</strong><span>running을 검색하면 사전형 run과 변화형을 확인합니다.</span></button>
           <button type="button" data-query="availability"><strong>파생어 살펴보기</strong><span>available → availability의 품사 변화를 확인합니다.</span></button>
           <button type="button" data-query="in-"><strong>형태소로 모아보기</strong><span>in-, im-, il-, ir-가 쓰인 단어를 의미별로 봅니다.</span></button>
@@ -509,6 +541,7 @@ function renderSearch(route) {
   });
   document.querySelectorAll('[data-query]').forEach((button) => button.addEventListener('click', () => setSearchRoute(button.dataset.query, mode, kind)));
   document.querySelectorAll('[data-mode]').forEach((button) => button.addEventListener('click', () => setSearchRoute(query, button.dataset.mode, kind)));
+  document.querySelector('[data-switch-meaning]')?.addEventListener('click', () => setSearchRoute(query, 'meaning', kind));
   document.querySelector('#kind-filter').addEventListener('change', (event) => setSearchRoute(query, mode, event.target.value));
 }
 
@@ -964,8 +997,8 @@ function renderRoute() {
 
 async function load() {
   try {
-    const catalogUrl = new URL('data/catalog.json?v=0.6.0', document.baseURI);
-    const importedUrl = new URL('data/imported-words.json?v=0.6.0', document.baseURI);
+    const catalogUrl = new URL('data/catalog.json?v=0.7.0', document.baseURI);
+    const importedUrl = new URL('data/imported-words.json?v=0.7.0', document.baseURI);
     const [catalogResponse, importedResponse] = await Promise.all([fetch(catalogUrl), fetch(importedUrl)]);
     if (!catalogResponse.ok) throw new Error(`catalog HTTP ${catalogResponse.status}`);
     if (!importedResponse.ok) throw new Error(`imported words HTTP ${importedResponse.status}`);
