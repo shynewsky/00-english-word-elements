@@ -3,7 +3,7 @@
     "project": "English Word Elements",
     "repository": "english-word-elements",
     "schemaVersion": 1,
-    "dataVersion": "0.5.1",
+    "dataVersion": "0.5.2",
     "language": "en",
     "interfaceLanguages": [
       "ko",
@@ -3543,7 +3543,8 @@
       "id": "wd-perspective",
       "lemma": "perspective",
       "partOfSpeech": [
-        "noun"
+        "noun",
+        "adjective"
       ],
       "status": "reviewed",
       "meanings": [
@@ -3587,6 +3588,14 @@
         {
           "form": "perspectives",
           "type": "plural"
+        },
+        {
+          "form": "more perspective",
+          "type": "comparative"
+        },
+        {
+          "form": "most perspective",
+          "type": "superlative"
         }
       ],
       "relations": [],
