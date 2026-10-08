@@ -7,6 +7,7 @@ const state = {
   elementSenses: new Map(),
   concepts: new Map(),
   sources: new Map(),
+  familyMembers: new Map(),
 };
 
 const normalize = (value = '') => value.normalize('NFKC').trim().toLocaleLowerCase('en');
@@ -36,6 +37,8 @@ const FORM_LABELS = Object.freeze({
 const RELATION_LABELS = Object.freeze({
   'derived-from': '파생 관계',
   compound: '합성 관계',
+  'variant-of': '변이 관계',
+  'related-family': '어원 가족',
 });
 
 function posLabel(value = '') {
@@ -97,6 +100,13 @@ function initMaps(data) {
   state.concepts = new Map(data.concepts.map((concept) => [concept.id, concept]));
   state.sources = new Map(data.sources.map((source) => [source.id, source]));
   state.elementSenses = new Map();
+  state.familyMembers = new Map();
+  for (const word of data.words) {
+    if (!word.familyHeadwordId) continue;
+    if (!state.familyMembers.has(word.familyHeadwordId)) state.familyMembers.set(word.familyHeadwordId, []);
+    state.familyMembers.get(word.familyHeadwordId).push(word);
+  }
+  for (const members of state.familyMembers.values()) members.sort((left, right) => left.lemma.localeCompare(right.lemma, 'en'));
   for (const element of data.elements) {
     for (const sense of element.senses) {
       state.elementSenses.set(sense.id, { element, sense });
@@ -122,15 +132,26 @@ function scoreText(query, value, weights) {
 }
 
 function bestWordMatch(word, query, mode) {
-  let best = { score: 0, reason: '' };
-  const consider = (score, reason) => {
-    if (score > best.score) best = { score, reason };
+  let best = { score: 0, reason: '', familyMember: null };
+  const consider = (score, reason, familyMember = null) => {
+    if (score > best.score) best = { score, reason, familyMember };
   };
 
   if (mode !== 'meaning') {
     consider(scoreText(query, word.lemma, { exact: 120, prefix: 92, includes: 65 }), '표제어 일치');
     for (const form of word.forms) {
       consider(scoreText(query, form.form, { exact: 114, prefix: 84, includes: 58 }), `활용형 ${form.form}을 통해 찾음`);
+    }
+    if (word.familyHeadwordId === word.id) {
+      for (const member of state.familyMembers.get(word.id) || []) {
+        if (member.id === word.id) continue;
+        const memberScore = scoreText(query, member.lemma, { exact: 128, prefix: 96, includes: 67 });
+        consider(memberScore, `${member.lemma}가 속한 어원 가족`, memberScore ? member : null);
+        for (const form of member.forms || []) {
+          const formScore = scoreText(query, form.form, { exact: 124, prefix: 90, includes: 62 });
+          consider(formScore, `${form.form}가 속한 어원 가족`, formScore ? member : null);
+        }
+      }
     }
   }
 
@@ -210,12 +231,14 @@ function setSearchRoute(query, mode = 'all', kind = 'all') {
 function resultCard(result, query) {
   if (result.type === 'word') {
     const word = result.entity;
+    const isFamilyResult = Boolean(result.familyMember);
+    const familyMembers = state.familyMembers.get(word.id) || [];
     const href = `#/word/${encodeHash(word.id)}?from=${encodeHash(query)}`;
-    return `<a class="result-row" href="${href}">
-      <span class="result-kind">단어</span>
+    return `<a class="result-row${isFamilyResult ? ' family-result' : ''}" href="${href}">
+      <span class="result-kind${isFamilyResult ? ' family' : ''}">${isFamilyResult ? '단어 가족' : '단어'}</span>
       <span class="result-entry">
         <span class="result-title-line"><strong>${escapeHtml(word.lemma)}</strong>${word.partOfSpeech.map((pos) => `<span class="pos-label">${escapeHtml(posLabel(pos))}</span>`).join('')}</span>
-        <span class="result-gloss">${escapeHtml(word.meanings[0]?.ko?.join(', ') || '')}</span>
+        <span class="result-gloss">${isFamilyResult ? escapeHtml(familyMembers.map((member) => member.lemma).join(' · ')) : escapeHtml(word.meanings[0]?.ko?.join(', ') || '')}</span>
         <span class="match-reason">${escapeHtml(result.reason)}</span>
       </span>
       <span class="result-arrow" aria-hidden="true">›</span>
@@ -307,6 +330,34 @@ function wordFamily(word) {
   return { parents, children };
 }
 
+function familyOverview(word) {
+  const headwordId = word.familyHeadwordId || word.id;
+  const headword = state.words.get(headwordId) || word;
+  const members = state.familyMembers.get(headwordId) || [word];
+  return { headword, members };
+}
+
+function pronunciationText(word) {
+  const pronunciations = word.pronunciations || [];
+  if (!pronunciations.length) return '발음 정보 미등록';
+  return pronunciations.map((item) => `${item.variety ? `${item.variety} ` : ''}${item.ipa}`).join(' · ');
+}
+
+function renderFamilyMemberCard(member, currentWord) {
+  const etymology = member.etymology?.summaryKo || '개별 어원 설명은 아직 등록되지 않았습니다.';
+  return `<article class="family-comparison-card${member.id === currentWord.id ? ' is-current' : ''}">
+    <div class="family-comparison-heading">
+      <a href="#/word/${encodeHash(member.id)}"><strong>${escapeHtml(member.lemma)}</strong></a>
+      <span>${member.partOfSpeech.map(posLabel).map(escapeHtml).join(' · ')}</span>
+    </div>
+    <dl class="family-comparison-meta">
+      <div><dt>발음</dt><dd>${escapeHtml(pronunciationText(member))}</dd></div>
+      <div><dt>의미</dt><dd>${escapeHtml(member.meanings[0]?.ko?.join(', ') || '')}</dd></div>
+      <div><dt>어원</dt><dd>${escapeHtml(etymology)}</dd></div>
+    </dl>
+  </article>`;
+}
+
 function compactSearch(value = '') {
   return `<form class="compact-search" data-compact-search>
     <label class="sr-only" for="compact-search-input">새 검색어</label>
@@ -332,6 +383,43 @@ function verbPrincipalParts(word) {
   const participle = word.forms.find((form) => form.type === 'past-participle');
   if (!past || !participle) return null;
   return [word.lemma, past.form, participle.form];
+}
+
+function verbTenseAspectRows(word) {
+  if (!word.partOfSpeech.includes('verb')) return [];
+  const form = (type, fallback = '') => word.forms.find((item) => item.type === type)?.form || fallback;
+  const base = word.lemma;
+  const third = form('third-person');
+  const past = form('past');
+  const participle = form('past-participle');
+  const presentParticiple = form('present-participle');
+  if (![third, past, participle, presentParticiple].every(Boolean)) return [];
+  return [
+    ['현재 단순', base, third],
+    ['현재 진행', `am ${presentParticiple}`, `is ${presentParticiple}`],
+    ['현재 완료', `have ${participle}`, `has ${participle}`],
+    ['현재 완료 진행', `have been ${presentParticiple}`, `has been ${presentParticiple}`],
+    ['과거 단순', past, past],
+    ['과거 진행', `was ${presentParticiple}`, `was ${presentParticiple}`],
+    ['과거 완료', `had ${participle}`, `had ${participle}`],
+    ['과거 완료 진행', `had been ${presentParticiple}`, `had been ${presentParticiple}`],
+    ['미래 단순', `will ${base}`, `will ${base}`],
+    ['미래 진행', `will be ${presentParticiple}`, `will be ${presentParticiple}`],
+    ['미래 완료', `will have ${participle}`, `will have ${participle}`],
+    ['미래 완료 진행', `will have been ${presentParticiple}`, `will have been ${presentParticiple}`],
+  ];
+}
+
+function renderVerbTenseAspectTable(word) {
+  const rows = verbTenseAspectRows(word);
+  if (!rows.length) return '';
+  return `<div class="tense-aspect-block">
+    <div class="form-group-heading"><h3>I / It 시제 활용</h3><span>주어에 따른 조동사와 동사 형태 비교</span></div>
+    <div class="tense-table-scroll"><table class="tense-aspect-table">
+      <thead><tr><th scope="col">시제·상</th><th scope="col">I</th><th scope="col">It</th></tr></thead>
+      <tbody>${rows.map(([label, iForm, itForm]) => `<tr><th scope="row">${escapeHtml(label)}</th><td><span>I</span> <strong>${escapeHtml(iForm)}</strong></td><td><span>It</span> <strong>${escapeHtml(itForm)}</strong></td></tr>`).join('')}</tbody>
+    </table></div>
+  </div>`;
 }
 
 function wordFormGroups(word) {
@@ -433,6 +521,7 @@ function renderWord(route) {
   const from = route.params.get('from');
   const matchedForm = from && normalize(from) !== normalize(word.lemma) && word.forms.find((form) => normalize(form.form) === normalize(from));
   const family = wordFamily(word);
+  const familyGroup = familyOverview(word);
   const principalParts = verbPrincipalParts(word);
   const formGroups = wordFormGroups(word);
   const formCount = formGroups.reduce((count, group) => count + group.entries.length, 0);
@@ -455,6 +544,7 @@ function renderWord(route) {
           <p class="entry-type">WORD</p>
           <div class="entry-title-line"><h1 tabindex="-1" id="view-title">${escapeHtml(word.lemma)}</h1>${word.partOfSpeech.map((pos) => `<span class="pos-label strong">${escapeHtml(posLabel(pos))}</span>`).join('')}</div>
           <p class="entry-summary">${word.meanings.map((meaning) => escapeHtml(meaning.ko.join(', '))).join(' · ')}</p>
+          <p class="entry-pronunciation"><span>발음</span>${escapeHtml(pronunciationText(word))}</p>
         </div>
         <span class="review-status${isImported ? ' auto' : ''}">${isImported ? '자동 수집' : '검수됨'}</span>
       </header>
@@ -462,12 +552,17 @@ function renderWord(route) {
       ${matchedForm ? `<p class="from-note"><strong>${escapeHtml(matchedForm.form)}</strong>은 <strong>${escapeHtml(word.lemma)}</strong>의 ${escapeHtml(formLabel(matchedForm.type))}입니다.</p>` : ''}
 
       <nav class="entry-nav" aria-label="상세 항목">
-        <button type="button" data-scroll-target="meaning">뜻</button><button type="button" data-scroll-target="forms">형태 변화</button><button type="button" data-scroll-target="family">단어 가족</button><button type="button" data-scroll-target="structure">단어 구조</button>
+        <button type="button" data-scroll-target="meaning">뜻</button><button type="button" data-scroll-target="etymology">어원</button><button type="button" data-scroll-target="forms">형태 변화</button><button type="button" data-scroll-target="family">단어 가족</button><button type="button" data-scroll-target="structure">단어 구조</button>
       </nav>
 
       <section class="entry-section" id="meaning">
         <h2>뜻</h2>
         <ol class="definition-list">${word.meanings.map((meaning) => `<li><span class="definition-ko">${escapeHtml(meaning.ko.join(', '))}</span><span class="definition-en">${escapeHtml(meaning.en.join('; '))}</span></li>`).join('')}</ol>
+      </section>
+
+      <section class="entry-section etymology-section" id="etymology">
+        <div class="section-heading"><h2>어원</h2><span>${word.etymology?.originLanguages?.map(escapeHtml).join(' → ') || '개별 검수 전'}</span></div>
+        ${word.etymology ? `<p class="etymology-ko">${escapeHtml(word.etymology.summaryKo)}</p>${word.etymology.summaryEn ? `<p class="etymology-en">${escapeHtml(word.etymology.summaryEn)}</p>` : ''}` : '<p class="muted">자동 수집 단어의 어원은 아직 연결되지 않았습니다.</p>'}
       </section>
 
       <section class="entry-section forms-section" id="forms">
@@ -477,6 +572,7 @@ function renderWord(route) {
           <span class="principal-line"><strong>${escapeHtml(principalParts[0])}</strong><i>–</i><strong>${escapeHtml(principalParts[1])}</strong><i>–</i><strong>${escapeHtml(principalParts[2])}</strong></span>
           <span class="principal-caption">기본형 · 과거형 · 과거분사</span>
         </div>` : ''}
+        ${renderVerbTenseAspectTable(word)}
         ${formGroups.length ? `<div class="form-groups">${formGroups.map((group) => `<div class="form-group">
           <div class="form-group-heading"><h3>${escapeHtml(group.title)}</h3><span>${escapeHtml(group.description)}</span></div>
           <div class="inflection-grid">${group.entries.map((form) => `<a href="#/word/${encodeHash(word.id)}?from=${encodeHash(form.form)}" class="inflection-card"><strong>${escapeHtml(form.form)}</strong><span>${escapeHtml(formLabel(form.type))}</span></a>`).join('')}</div>
@@ -484,13 +580,15 @@ function renderWord(route) {
       </section>
 
       <section class="entry-section" id="family">
-        <div class="section-heading"><h2>단어 가족</h2><span>파생 관계만 표시합니다</span></div>
-        <p class="section-description">접사가 붙거나 품사가 달라져 만들어진 새 단어입니다.</p>
-        <div class="family-relations">
-          ${family.parents.map(({ word: parent, relation }) => familyRelationCard(parent, word, relation, parent)).join('')}
-          ${family.children.map(({ word: child, relation }) => familyRelationCard(word, child, relation, child)).join('')}
-          ${!family.parents.length && !family.children.length ? '<p class="muted">등록된 직접 파생 관계가 없습니다.</p>' : ''}
-        </div>
+        <div class="section-heading"><h2>단어 가족</h2><span>${familyGroup.members.length > 1 ? `${familyGroup.members.length}개 어원 가족` : '파생 관계'}</span></div>
+        ${familyGroup.members.length > 1 ? `<div class="family-root-nav"><span>가족 대표 표제어</span><a href="#/word/${encodeHash(familyGroup.headword.id)}"><strong>${escapeHtml(familyGroup.headword.lemma)}</strong></a></div>
+          ${familyGroup.headword.familySummaryKo ? `<p class="family-summary">${escapeHtml(familyGroup.headword.familySummaryKo)}</p>` : ''}
+          <div class="family-member-grid">${familyGroup.members.map((member) => renderFamilyMemberCard(member, word)).join('')}</div>` : `<p class="section-description">접사가 붙거나 품사가 달라져 만들어진 새 단어입니다.</p>
+          <div class="family-relations">
+            ${family.parents.map(({ word: parent, relation }) => familyRelationCard(parent, word, relation, parent)).join('')}
+            ${family.children.map(({ word: child, relation }) => familyRelationCard(word, child, relation, child)).join('')}
+            ${!family.parents.length && !family.children.length ? '<p class="muted">등록된 직접 파생 관계가 없습니다.</p>' : ''}
+          </div>`}
       </section>
 
       <section class="entry-section" id="structure">
@@ -571,14 +669,16 @@ function renderRoute() {
 
 async function load() {
   try {
-    const catalogUrl = new URL('data/catalog.json?v=0.3.1', document.baseURI);
-    const importedUrl = new URL('data/imported-words.json?v=0.3.1', document.baseURI);
+    const catalogUrl = new URL('data/catalog.json?v=0.4.0', document.baseURI);
+    const importedUrl = new URL('data/imported-words.json?v=0.4.0', document.baseURI);
     const [catalogResponse, importedResponse] = await Promise.all([fetch(catalogUrl), fetch(importedUrl)]);
     if (!catalogResponse.ok) throw new Error(`catalog HTTP ${catalogResponse.status}`);
     if (!importedResponse.ok) throw new Error(`imported words HTTP ${importedResponse.status}`);
     const [data, imported] = await Promise.all([catalogResponse.json(), importedResponse.json()]);
-    data.words = [...data.words, ...imported.words];
-    data.meta.imported = imported.meta;
+    const curatedKeys = new Set(data.words.map((word) => `${normalize(word.lemma)}|${[...word.partOfSpeech].sort().join(',')}`));
+    const importedWords = imported.words.filter((word) => !curatedKeys.has(`${normalize(word.lemma)}|${[...word.partOfSpeech].sort().join(',')}`));
+    data.words = [...data.words, ...importedWords];
+    data.meta.imported = { ...imported.meta, loadedWordCount: importedWords.length };
     initMaps(data);
     if (!location.hash) location.hash = '#/search';
     renderRoute();

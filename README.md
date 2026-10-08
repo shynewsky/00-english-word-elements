@@ -10,6 +10,9 @@ https://shynewsky.github.io/00-english-word-elements/
 
 - Resolves inflected forms such as `running` to the lemma `run`
 - Shows verb principal parts such as `run–ran–run`
+- Expands verbs into a 12-row I/It tense-aspect comparison such as `I run / It runs`
+- Finds a family headword when a derived member is searched, such as `intuitive → intuit`
+- Compares each family member's pronunciation, part of speech, meaning and etymology
 - Shows clickable word decompositions
 - Separates inflectional forms from derived word-family relations such as `run → runner`
 - Labels category-changing derivations such as `available` (adjective) → `availability` (noun)
@@ -19,7 +22,7 @@ https://shynewsky.github.io/00-english-word-elements/
 - Distinguishes synchronic and etymological analyses
 - Displays source and license information
 
-Version 0.3 combines 27 curated entries and 16 reviewed word elements with 5,000 automatically collected, source-linked dictionary entries. Imported entries are clearly labelled `자동 수집`; detailed morpheme analyses remain review-only.
+Version 0.4 serves 5,032 unique entries: 33 curated words and 4,999 currently loaded automatic entries, plus 18 reviewed word elements. OEWN pronunciation and derivational links enrich the automatic layer; detailed morpheme and etymology analyses remain reviewed data. Imported entries are clearly labelled `자동 수집`.
 
 ## Architecture
 
