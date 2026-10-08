@@ -37,7 +37,11 @@
       ],
       "forms": [
         {
-          "form": "was, were",
+          "form": "was",
+          "type": "past"
+        },
+        {
+          "form": "were",
           "type": "past"
         },
         {
@@ -1191,7 +1195,11 @@
       ],
       "forms": [
         {
-          "form": "gases or gasses",
+          "form": "gases",
+          "type": "plural"
+        },
+        {
+          "form": "gasses",
           "type": "plural"
         }
       ],
@@ -3941,7 +3949,11 @@
       ],
       "forms": [
         {
-          "form": "buses or busses",
+          "form": "buses",
+          "type": "plural"
+        },
+        {
+          "form": "busses",
           "type": "plural"
         }
       ],
@@ -20036,7 +20048,11 @@
       ],
       "forms": [
         {
-          "form": "folk or folks",
+          "form": "folk",
+          "type": "plural"
+        },
+        {
+          "form": "folks",
           "type": "plural"
         }
       ],
@@ -22806,7 +22822,11 @@
       ],
       "forms": [
         {
-          "form": "lemmas or lemmata",
+          "form": "lemmas",
+          "type": "plural"
+        },
+        {
+          "form": "lemmata",
           "type": "plural"
         }
       ],
@@ -36618,7 +36638,11 @@
       ],
       "forms": [
         {
-          "form": "carp or carps",
+          "form": "carp",
+          "type": "plural"
+        },
+        {
+          "form": "carps",
           "type": "plural"
         }
       ],
@@ -39798,7 +39822,11 @@
       ],
       "forms": [
         {
-          "form": "deer or deers",
+          "form": "deer",
+          "type": "plural"
+        },
+        {
+          "form": "deers",
           "type": "plural"
         }
       ],
@@ -45106,7 +45134,11 @@
       ],
       "forms": [
         {
-          "form": "halos or haloes",
+          "form": "halos",
+          "type": "plural"
+        },
+        {
+          "form": "haloes",
           "type": "plural"
         }
       ],
@@ -46400,7 +46432,11 @@
       ],
       "forms": [
         {
-          "form": "hoofs or hooves",
+          "form": "hoofs",
+          "type": "plural"
+        },
+        {
+          "form": "hooves",
           "type": "plural"
         }
       ],
@@ -46980,7 +47016,11 @@
       ],
       "forms": [
         {
-          "form": "indexes or indices",
+          "form": "indexes",
+          "type": "plural"
+        },
+        {
+          "form": "indices",
           "type": "plural"
         }
       ],
@@ -51593,7 +51633,11 @@
       ],
       "forms": [
         {
-          "form": "orcas or orca",
+          "form": "orcas",
+          "type": "plural"
+        },
+        {
+          "form": "orca",
           "type": "plural"
         }
       ],
@@ -52461,7 +52505,11 @@
       ],
       "forms": [
         {
-          "form": "pluses or plusses",
+          "form": "pluses",
+          "type": "plural"
+        },
+        {
+          "form": "plusses",
           "type": "plural"
         }
       ],
@@ -52720,7 +52768,11 @@
       ],
       "forms": [
         {
-          "form": "prawns or prawn",
+          "form": "prawns",
+          "type": "plural"
+        },
+        {
+          "form": "prawn",
           "type": "plural"
         }
       ],
@@ -60139,7 +60191,11 @@
       ],
       "forms": [
         {
-          "form": "trout or trouts",
+          "form": "trout",
+          "type": "plural"
+        },
+        {
+          "form": "trouts",
           "type": "plural"
         }
       ],
@@ -60279,7 +60335,11 @@
       ],
       "forms": [
         {
-          "form": "tuna or tunas",
+          "form": "tuna",
+          "type": "plural"
+        },
+        {
+          "form": "tunas",
           "type": "plural"
         }
       ],
@@ -62595,7 +62655,11 @@
       ],
       "forms": [
         {
-          "form": "zeros or zeroes",
+          "form": "zeros",
+          "type": "plural"
+        },
+        {
+          "form": "zeroes",
           "type": "plural"
         }
       ],
@@ -67120,7 +67184,11 @@
       ],
       "forms": [
         {
-          "form": "bisons or bison",
+          "form": "bisons",
+          "type": "plural"
+        },
+        {
+          "form": "bison",
           "type": "plural"
         }
       ],
@@ -69370,7 +69438,7 @@
           "type": "plural"
         },
         {
-          "form": "chillun or chiles",
+          "form": "chillun",
           "type": "plural"
         }
       ],
@@ -76810,7 +76878,11 @@
       ],
       "forms": [
         {
-          "form": "forums or fora",
+          "form": "forums",
+          "type": "plural"
+        },
+        {
+          "form": "fora",
           "type": "plural"
         }
       ],
@@ -81915,7 +81987,11 @@
       ],
       "forms": [
         {
-          "form": "mediums or media",
+          "form": "mediums",
+          "type": "plural"
+        },
+        {
+          "form": "media",
           "type": "plural"
         }
       ],
@@ -82344,7 +82420,11 @@
       ],
       "forms": [
         {
-          "form": "moneys or monies",
+          "form": "moneys",
+          "type": "plural"
+        },
+        {
+          "form": "monies",
           "type": "plural"
         }
       ],
@@ -83601,7 +83681,11 @@
       ],
       "forms": [
         {
-          "form": "okapis or okapi",
+          "form": "okapis",
+          "type": "plural"
+        },
+        {
+          "form": "okapi",
           "type": "plural"
         }
       ],
@@ -84135,7 +84219,11 @@
       ],
       "forms": [
         {
-          "form": "persons or people",
+          "form": "persons",
+          "type": "plural"
+        },
+        {
+          "form": "people",
           "type": "plural"
         }
       ],
@@ -97854,7 +97942,11 @@
       ],
       "forms": [
         {
-          "form": "abacuses or abaci",
+          "form": "abacuses",
+          "type": "plural"
+        },
+        {
+          "form": "abaci",
           "type": "plural"
         }
       ],
@@ -99187,7 +99279,11 @@
       ],
       "forms": [
         {
-          "form": "appendices or appendixes",
+          "form": "appendices",
+          "type": "plural"
+        },
+        {
+          "form": "appendixes",
           "type": "plural"
         }
       ],
@@ -101433,7 +101529,11 @@
       ],
       "forms": [
         {
-          "form": "bureaus or bureaux",
+          "form": "bureaus",
+          "type": "plural"
+        },
+        {
+          "form": "bureaux",
           "type": "plural"
         }
       ],
@@ -101607,7 +101707,11 @@
       ],
       "forms": [
         {
-          "form": "cacti or cactuses",
+          "form": "cacti",
+          "type": "plural"
+        },
+        {
+          "form": "cactuses",
           "type": "plural"
         }
       ],
@@ -103711,7 +103815,11 @@
       ],
       "forms": [
         {
-          "form": "corollas or corollae",
+          "form": "corollas",
+          "type": "plural"
+        },
+        {
+          "form": "corollae",
           "type": "plural"
         }
       ],
@@ -103756,7 +103864,11 @@
       ],
       "forms": [
         {
-          "form": "corpora or corpuses",
+          "form": "corpora",
+          "type": "plural"
+        },
+        {
+          "form": "corpuses",
           "type": "plural"
         }
       ],
@@ -114843,7 +114955,11 @@
       ],
       "forms": [
         {
-          "form": "nauseas or nauseae",
+          "form": "nauseas",
+          "type": "plural"
+        },
+        {
+          "form": "nauseae",
           "type": "plural"
         }
       ],
@@ -117436,7 +117552,11 @@
       ],
       "forms": [
         {
-          "form": "podiums or podia",
+          "form": "podiums",
+          "type": "plural"
+        },
+        {
+          "form": "podia",
           "type": "plural"
         }
       ],
@@ -121514,7 +121634,11 @@
       ],
       "forms": [
         {
-          "form": "salmons or salmon",
+          "form": "salmons",
+          "type": "plural"
+        },
+        {
+          "form": "salmon",
           "type": "plural"
         }
       ],
@@ -126003,7 +126127,11 @@
       ],
       "forms": [
         {
-          "form": "vacuums or vacua",
+          "form": "vacuums",
+          "type": "plural"
+        },
+        {
+          "form": "vacua",
           "type": "plural"
         }
       ],
@@ -126427,7 +126555,11 @@
       ],
       "forms": [
         {
-          "form": "walruses or walrusses",
+          "form": "walruses",
+          "type": "plural"
+        },
+        {
+          "form": "walrusses",
           "type": "plural"
         }
       ],
@@ -129964,7 +130096,11 @@
       ],
       "forms": [
         {
-          "form": "buffalos or buffalo",
+          "form": "buffalos",
+          "type": "plural"
+        },
+        {
+          "form": "buffalo",
           "type": "plural"
         }
       ],
@@ -130463,7 +130599,11 @@
       ],
       "forms": [
         {
-          "form": "caribous or caribou",
+          "form": "caribous",
+          "type": "plural"
+        },
+        {
+          "form": "caribou",
           "type": "plural"
         }
       ],
@@ -141880,7 +142020,11 @@
       ],
       "forms": [
         {
-          "form": "newborns or newborn",
+          "form": "newborns",
+          "type": "plural"
+        },
+        {
+          "form": "newborn",
           "type": "plural"
         }
       ],
@@ -142167,7 +142311,11 @@
       ],
       "forms": [
         {
-          "form": "octopuses or octopi",
+          "form": "octopuses",
+          "type": "plural"
+        },
+        {
+          "form": "octopi",
           "type": "plural"
         }
       ],
@@ -155614,7 +155762,11 @@
       ],
       "forms": [
         {
-          "form": "deceased or deceaseds",
+          "form": "deceased",
+          "type": "plural"
+        },
+        {
+          "form": "deceaseds",
           "type": "plural"
         }
       ],
@@ -159654,7 +159806,11 @@
       ],
       "forms": [
         {
-          "form": "goldfish or goldfishes",
+          "form": "goldfish",
+          "type": "plural"
+        },
+        {
+          "form": "goldfishes",
           "type": "plural"
         }
       ],
@@ -160988,7 +161144,11 @@
       ],
       "forms": [
         {
-          "form": "insignias or insignia",
+          "form": "insignias",
+          "type": "plural"
+        },
+        {
+          "form": "insignia",
           "type": "plural"
         }
       ],
@@ -162514,7 +162674,11 @@
       ],
       "forms": [
         {
-          "form": "militaries or military",
+          "form": "militaries",
+          "type": "plural"
+        },
+        {
+          "form": "military",
           "type": "plural"
         }
       ],
@@ -164350,7 +164514,11 @@
       ],
       "forms": [
         {
-          "form": "platypuses or platypi",
+          "form": "platypuses",
+          "type": "plural"
+        },
+        {
+          "form": "platypi",
           "type": "plural"
         }
       ],
@@ -165559,7 +165727,11 @@
       ],
       "forms": [
         {
-          "form": "reindeers or reindeer",
+          "form": "reindeers",
+          "type": "plural"
+        },
+        {
+          "form": "reindeer",
           "type": "plural"
         }
       ],
@@ -178133,7 +178305,11 @@
       ],
       "forms": [
         {
-          "form": "jellyfish or jellyfishes",
+          "form": "jellyfish",
+          "type": "plural"
+        },
+        {
+          "form": "jellyfishes",
           "type": "plural"
         }
       ],
@@ -178533,7 +178709,11 @@
       ],
       "forms": [
         {
-          "form": "manifestos or manifestoes",
+          "form": "manifestos",
+          "type": "plural"
+        },
+        {
+          "form": "manifestoes",
           "type": "plural"
         }
       ],
@@ -182785,7 +182965,11 @@
       ],
       "forms": [
         {
-          "form": "thesauruses or thesauri",
+          "form": "thesauruses",
+          "type": "plural"
+        },
+        {
+          "form": "thesauri",
           "type": "plural"
         }
       ],
@@ -190526,7 +190710,11 @@
       ],
       "forms": [
         {
-          "form": "phenomena or phenomenons",
+          "form": "phenomena",
+          "type": "plural"
+        },
+        {
+          "form": "phenomenons",
           "type": "plural"
         }
       ],
@@ -199633,7 +199821,11 @@
       ],
       "forms": [
         {
-          "form": "hippopotami or hippopotamuses",
+          "form": "hippopotami",
+          "type": "plural"
+        },
+        {
+          "form": "hippopotamuses",
           "type": "plural"
         }
       ],
@@ -204658,7 +204850,11 @@
       ],
       "forms": [
         {
-          "form": "fish or fishes",
+          "form": "fish",
+          "type": "plural"
+        },
+        {
+          "form": "fishes",
           "type": "plural"
         }
       ],

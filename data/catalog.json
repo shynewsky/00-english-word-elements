@@ -2,8 +2,8 @@
   "meta": {
     "project": "English Word Elements",
     "repository": "english-word-elements",
-    "schemaVersion": 1,
-    "dataVersion": "0.6.0",
+    "schemaVersion": 2,
+    "dataVersion": "0.7.0",
     "language": "en",
     "interfaceLanguages": [
       "ko",
