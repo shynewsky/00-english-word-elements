@@ -15,6 +15,35 @@
   "$defs": {
     "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:[-._][a-z0-9]+)*$" },
     "status": { "enum": ["draft", "reviewed", "published"] },
+    "elementExample": {
+      "type": "object",
+      "required": ["wordId", "mode", "noteKo"],
+      "properties": {
+        "wordId": { "$ref": "#/$defs/id" },
+        "mode": { "enum": ["synchronic", "etymological"] },
+        "noteKo": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "elementSense": {
+      "type": "object",
+      "required": ["id", "glossKo", "glossEn", "concepts", "function", "categoryChange", "productivity", "usageNoteKo", "etymologyNoteKo", "examples", "sources"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "glossKo": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "glossEn": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "concepts": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+        "function": { "type": "string", "minLength": 1 },
+        "categoryChange": { "type": ["string", "null"] },
+        "productivity": { "type": "string", "minLength": 1 },
+        "usageNoteKo": { "type": "string", "minLength": 1 },
+        "etymologyNoteKo": { "type": "string", "minLength": 1 },
+        "examples": { "type": "array", "items": { "$ref": "#/$defs/elementExample" } },
+        "coverageWaiverKo": { "type": "string", "minLength": 1 },
+        "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" } }
+      },
+      "additionalProperties": false
+    },
     "source": {
       "type": "object",
       "required": ["id", "name", "url", "license", "role"],
@@ -34,7 +63,7 @@
         "id": { "$ref": "#/$defs/id" }, "canonicalForm": { "type": "string" },
         "kind": { "enum": ["prefix", "suffix", "root", "combining-form", "infix", "circumfix"] },
         "originLanguage": { "type": "string" }, "bound": { "type": "boolean" },
-        "allomorphs": { "type": "array", "minItems": 1 }, "senses": { "type": "array", "minItems": 1 }, "status": { "$ref": "#/$defs/status" }
+        "allomorphs": { "type": "array", "minItems": 1 }, "senses": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/elementSense" } }, "status": { "$ref": "#/$defs/status" }
       },
       "additionalProperties": false
     },
