@@ -32,7 +32,7 @@
   "selection": {
     "rule": "English single-word OEWN entries with Korean glosses matched first by lemma and part of speech, then by lemma when the Korean source has an unknown part of speech",
     "priority": "Entries also present in Simple English Wiktionary, then lowercase and shorter lemmas; family links are retained when both records are available",
-    "limit": 5000,
+    "limit": 6000,
     "reviewStatus": "draft"
   }
 }
