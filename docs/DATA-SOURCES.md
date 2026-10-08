@@ -39,13 +39,13 @@ normalize lemma + part of speech, with lemma fallback for unknown Korean POS
         ↓
 collect definitions, forms, IPA pronunciations and OEWN derivational links
         ↓
-select 5,000 source-linked entries and build connected word-family groups
+select up to 6,000 source-linked entries and build connected word-family groups
         ↓
 data/imported-words.json
         ↓ npm run validate
 GitHub pull request and Pages deployment
 ```
 
-The monthly `Refresh public lexicon data` workflow downloads about 45 MB of compressed source data, never commits raw dumps, regenerates only the compact imported output, validates all IDs and relationships, and opens a pull request for review. Exact source URLs, versions, sizes and selection rules are recorded in `imports/source-manifest.json`.
+The current checked-in snapshot contains 5,000 imported records; the refresh cap is 6,000 so newly reviewed bridge words are less likely to disappear on regeneration. The monthly `Refresh public lexicon data` workflow downloads about 45 MB of compressed source data, never commits raw dumps, regenerates only the compact imported output, validates all IDs and relationships, and opens a pull request for review. Exact source URLs, versions, sizes and selection rules are recorded in `imports/source-manifest.json`.
 
 OEWN derivation links are symmetric lexical-family evidence, not guaranteed historical direction. They are imported as `related-family`; reviewed `derived-from` edges and word-level etymology remain editorial claims. High-value reviewed families can additionally use per-entry English Wiktionary/Wiktextract JSONL records for `etymology_text`, `sounds`, `derived` and `related` fields without downloading the multi-gigabyte full English dump.

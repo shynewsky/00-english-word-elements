@@ -10,7 +10,7 @@ The project uses two mergeable static JSON layers.
 - SQLite is not canonical because binary database files are difficult to diff and merge in Git.
 - The browser merges both files and performs search locally.
 
-At 5,000 imported words the combined payload remains practical. The catalog can later be sharded without changing IDs or relationships.
+At the current 5,000 imported words, with a refresh cap of 6,000, the combined payload remains practical. The catalog can later be sharded without changing IDs or relationships.
 
 ## 2. Logical relationship model
 
@@ -23,6 +23,8 @@ erDiagram
 
     ELEMENT ||--o{ ALLOMORPH : realizes
     ELEMENT ||--o{ ELEMENT_SENSE : has
+    ELEMENT_SENSE ||--o{ VERIFIED_EXAMPLE : supported_by
+    WORD ||--o{ VERIFIED_EXAMPLE : connects
 
     WORD_SENSE ||--o{ ANALYSIS : analyzed_by
     ANALYSIS ||--|{ ANALYSIS_PART : contains
@@ -39,7 +41,7 @@ erDiagram
 
 ### Word
 
-A dictionary-level lemma. The same spelling may have multiple Word records when part of speech or etymology differs.
+A dictionary-level lemma. The same spelling may have multiple Word records when part of speech or etymology differs. Search groups those records into one visible lemma result while preserving the underlying records and part-of-speech labels.
 
 Required fields:
 
@@ -110,6 +112,10 @@ One specific meaning or function of an Element.
 - `usageNoteKo`
 - `etymologyNoteKo`
 - `sources[]`
+- `examples[]`: reviewed reverse links to words when a full spelling decomposition is unavailable
+- optional `coverageWaiverKo`: editorial reason that fewer than two verified word links are temporarily acceptable
+
+Each example records `wordId`, `mode` (`synchronic` or `etymological`) and a Korean review note. Analysis parts remain the strongest evidence; verified examples provide a navigable link without pretending that the whole word has been segmented. Spelling-only matches are computed separately in the browser and are never stored as verified graph edges.
 
 Analysis parts reference an Element sense, not only an Element. This allows words to be grouped by the exact meaning in use.
 
