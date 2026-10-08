@@ -609,7 +609,7 @@ function renderGrammarContent(word) {
   const verbForms = isVerb ? [{ form: word.lemma, type: 'base-form' }, ...(word.forms || []).filter((form) => ['third-person', 'past', 'past-participle', 'present-participle'].includes(form.type))] : [];
   const verbBlock = isVerb ? `${renderPrincipalParts(word)}
     ${rows.length ? renderVerbTenseAspectTable(word) : '<div class="grammar-notice"><strong>시제표 준비 중</strong><span>12시제 표에 필요한 동사 변화형이 모두 등록되면 같은 형식으로 표시됩니다.</span></div>'}
-    ${verbForms.length > 1 ? `<details class="verb-forms-details"><summary>등록된 동사 변화형 ${verbForms.length}개 보기</summary><div class="inflection-grid">${verbForms.map((form) => `<a href="#/word/${encodeHash(word.id)}?from=${encodeHash(form.form)}" class="inflection-card"><strong>${escapeHtml(form.form)}</strong><span>${escapeHtml(formLabel(form.type))}</span></a>`).join('')}</div></details>` : ''}` : '';
+    ${verbForms.length > 1 ? `<details class="verb-forms-details"><summary>기본형 포함 동사 변화 ${verbForms.length}개 보기</summary><div class="inflection-grid">${verbForms.map((form) => `<a href="#/word/${encodeHash(word.id)}?from=${encodeHash(form.form)}" class="inflection-card"><strong>${escapeHtml(form.form)}</strong><span>${escapeHtml(formLabel(form.type))}</span></a>`).join('')}</div></details>` : ''}` : '';
   const otherBlock = renderFormGroups(word, nonVerbGroups);
   return verbBlock || otherBlock ? `${verbBlock}${otherBlock}` : '<div class="consistent-empty"><strong>별도 활용형이 없습니다.</strong><span>현재 표제어 외에 등록된 문법적 변화가 없는 항목입니다.</span></div>'; 
 }
