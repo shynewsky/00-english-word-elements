@@ -56,6 +56,14 @@ for (const element of data.elements) {
     for (const conceptId of sense.concepts || []) if (!conceptIds.has(conceptId)) fail(`${sense.id} references missing concept ${conceptId}`);
     for (const sourceId of sense.sources || []) if (!sourceIds.has(sourceId)) fail(`${sense.id} references missing source ${sourceId}`);
     if (element.status !== 'draft' && !(sense.sources || []).length) fail(`Reviewed element sense ${sense.id} needs a source`);
+    const exampleWordIds = new Set();
+    for (const example of sense.examples || []) {
+      if (!wordIds.has(example.wordId)) fail(`${sense.id} example references missing word ${example.wordId}`);
+      if (exampleWordIds.has(example.wordId)) fail(`${sense.id} repeats example word ${example.wordId}`);
+      exampleWordIds.add(example.wordId);
+      if (!['synchronic', 'etymological'].includes(example.mode)) fail(`${sense.id} example ${example.wordId} has invalid mode ${example.mode}`);
+      if (!example.noteKo?.trim()) fail(`${sense.id} example ${example.wordId} needs a Korean review note`);
+    }
   }
 }
 
@@ -133,8 +141,13 @@ for (const wordId of wordIds) visit(wordId);
 
 for (const element of data.elements) {
   for (const sense of element.senses) {
-    const count = data.words.filter((word) => word.analyses.some((analysis) => analysis.parts.some((part) => part.elementSenseId === sense.id))).length;
-    if (!count) warn(`Element sense ${sense.id} has no example word`);
+    const linkedWordIds = new Set((sense.examples || []).map((example) => example.wordId));
+    for (const word of data.words) {
+      if (word.analyses.some((analysis) => analysis.parts.some((part) => part.elementSenseId === sense.id))) linkedWordIds.add(word.id);
+    }
+    if (!linkedWordIds.size) fail(`Reviewed element sense ${sense.id} has no verified word connection`);
+    if (linkedWordIds.size < 2 && !sense.coverageWaiverKo?.trim()) fail(`Element sense ${sense.id} has only ${linkedWordIds.size} verified word; add coverage or a waiver`);
+    if (sense.coverageWaiverKo && linkedWordIds.size > 1) warn(`Element sense ${sense.id} still has a coverage waiver despite ${linkedWordIds.size} verified words`);
   }
 }
 

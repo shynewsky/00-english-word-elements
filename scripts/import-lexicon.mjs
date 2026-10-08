@@ -16,7 +16,7 @@ for (const name of required) {
 const projectRoot = path.resolve(import.meta.dirname, '..');
 const outputPath = path.resolve(args.get('--output') || path.join(projectRoot, 'data', 'imported-words.json'));
 const curatedPath = path.join(projectRoot, 'data', 'catalog.json');
-const limit = Number(args.get('--limit') || 5000);
+const limit = Number(args.get('--limit') || 6000);
 const generatedAt = args.get('--generated-at') || new Date().toISOString().slice(0, 10);
 const oewnDir = path.resolve(args.get('--oewn-dir'));
 const koWiktionaryPath = path.resolve(args.get('--ko-wiktionary'));
