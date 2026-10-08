@@ -3,7 +3,7 @@
     "project": "English Word Elements",
     "repository": "english-word-elements",
     "schemaVersion": 1,
-    "dataVersion": "0.5.2",
+    "dataVersion": "0.6.0",
     "language": "en",
     "interfaceLanguages": [
       "ko",
@@ -309,6 +309,28 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-unbelievable",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 un-의 아닌 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-unhappiness",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 un-의 아닌 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-unhappy-adj",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 un-의 아닌 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-unable-adj",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 un-의 아닌 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -360,6 +382,18 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-impossible",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 in-의 아닌 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-irregular",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 in-의 아닌 의미로 연결된다."
+            }
           ]
         },
         {
@@ -384,6 +418,23 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-import",
+              "mode": "etymological",
+              "noteKo": "in-의 안으로 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-inscription",
+              "mode": "etymological",
+              "noteKo": "in-의 안으로 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-inspire-v",
+              "mode": "etymological",
+              "noteKo": "in-의 안으로 의미와 어원적으로 연결된다."
+            }
           ]
         }
       ],
@@ -424,6 +475,23 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-transport",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 trans-의 가로질러 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-transportation",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 trans-의 가로질러 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-transfer-n",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 trans-의 가로질러 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -463,6 +531,23 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-rewrite",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 re-의 다시 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-redo-v",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 re-의 다시 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-rebuild-v",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 re-의 다시 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -502,6 +587,23 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-prewrite",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 pre-의 이전에 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-preview-v",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 pre-의 이전에 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-prefix-n",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 pre-의 이전에 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -541,6 +643,18 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-describe",
+              "mode": "etymological",
+              "noteKo": "de-의 아래로 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-description",
+              "mode": "etymological",
+              "noteKo": "de-의 아래로 의미와 어원적으로 연결된다."
+            }
           ]
         }
       ],
@@ -580,6 +694,18 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-biology",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 bio-의 생명 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-biography",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 bio-의 생명 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -619,6 +745,43 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-transport",
+              "mode": "etymological",
+              "noteKo": "port의 나르다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-transportation",
+              "mode": "etymological",
+              "noteKo": "port의 나르다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import",
+              "mode": "etymological",
+              "noteKo": "port의 나르다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-portable",
+              "mode": "etymological",
+              "noteKo": "port의 나르다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-export-n",
+              "mode": "etymological",
+              "noteKo": "port의 나르다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-support-v",
+              "mode": "etymological",
+              "noteKo": "port의 나르다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-report-n",
+              "mode": "etymological",
+              "noteKo": "port의 나르다 의미와 어원적으로 연결된다."
+            }
           ]
         }
       ],
@@ -666,6 +829,33 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-describe",
+              "mode": "etymological",
+              "noteKo": "scrib/script의 쓰다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-description",
+              "mode": "etymological",
+              "noteKo": "scrib/script의 쓰다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-inscription",
+              "mode": "etymological",
+              "noteKo": "scrib/script의 쓰다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-prescribe-v",
+              "mode": "etymological",
+              "noteKo": "scrib/script의 쓰다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-subscribe-v",
+              "mode": "etymological",
+              "noteKo": "scrib/script의 쓰다 의미와 어원적으로 연결된다."
+            }
           ]
         }
       ],
@@ -707,6 +897,18 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-biography",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -graphy의 기록 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-bibliography-n",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -graphy의 기록 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -746,6 +948,18 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-biology",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -logy의 학문 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-technology-n",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -logy의 학문 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -789,6 +1003,33 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-believable",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -able의 할 수 있는 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-unbelievable",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -able의 할 수 있는 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-portable",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -able의 할 수 있는 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-intuitable",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -able의 할 수 있는 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-available",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -able의 할 수 있는 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -828,6 +1069,23 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-happiness",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ness의 상태 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-unhappiness",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ness의 상태 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-intuitiveness",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ness의 상태 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -867,6 +1125,23 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-runner",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -er의 하는 사람 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-writer",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -er의 하는 사람 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-employer-n",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -er의 하는 사람 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -920,6 +1195,38 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-transportation",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ion의 행위 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-description",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ion의 행위 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-inscription",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ion의 행위 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-intuition",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ion의 행위 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-action-n",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ion의 행위 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-education-n",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ion의 행위 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -964,6 +1271,23 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-availability",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ity의 상태 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-security-n",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ity의 상태 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-quality-n",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ity의 상태 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -1003,6 +1327,33 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-intuitive",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ive의 성질을 가진 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-perspective",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ive의 성질을 가진 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-active-adj",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ive의 성질을 가진 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-effective-adj",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ive의 성질을 가진 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-relative-adj",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ive의 성질을 가진 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -1040,6 +1391,23 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-intuitively",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ly의 ~하게 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-quickly-adv",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ly의 ~하게 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-really-adv",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ly의 ~하게 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -1085,6 +1453,28 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-abnormal",
+              "mode": "etymological",
+              "noteKo": "ab-의 ~에서 벗어나 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-abstract-n",
+              "mode": "etymological",
+              "noteKo": "ab-의 ~에서 벗어나 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-abduct-v",
+              "mode": "etymological",
+              "noteKo": "ab-의 ~에서 벗어나 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-abstain-v",
+              "mode": "etymological",
+              "noteKo": "ab-의 ~에서 벗어나 의미와 어원적으로 연결된다."
+            }
           ]
         }
       ],
@@ -1122,6 +1512,23 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-perspective",
+              "mode": "etymological",
+              "noteKo": "per-의 통하여 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-perceive-v",
+              "mode": "etymological",
+              "noteKo": "per-의 통하여 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-perfect-adj",
+              "mode": "etymological",
+              "noteKo": "per-의 통하여 의미와 어원적으로 연결된다."
+            }
           ]
         }
       ],
@@ -1167,6 +1574,28 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-perspective",
+              "mode": "etymological",
+              "noteKo": "spect의 보다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-respect-v",
+              "mode": "etymological",
+              "noteKo": "spect의 보다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-prospect-n",
+              "mode": "etymological",
+              "noteKo": "spect의 보다 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-suspect-adj",
+              "mode": "etymological",
+              "noteKo": "spect의 보다 의미와 어원적으로 연결된다."
+            }
           ]
         }
       ],
@@ -1208,6 +1637,28 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-primitive",
+              "mode": "etymological",
+              "noteKo": "prim의 첫째의 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-prime-v",
+              "mode": "etymological",
+              "noteKo": "prim의 첫째의 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-primary",
+              "mode": "etymological",
+              "noteKo": "prim의 첫째의 의미와 어원적으로 연결된다."
+            },
+            {
+              "wordId": "wd-import-primate-n",
+              "mode": "etymological",
+              "noteKo": "prim의 첫째의 의미와 어원적으로 연결된다."
+            }
           ]
         }
       ],
@@ -1245,6 +1696,65 @@
           "sources": [
             "src-wiktionary",
             "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-primitive",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -itive의 성질을 가진 의미로 연결된다."
+            }
+          ],
+          "coverageWaiverKo": "현재 검수 데이터에서는 primitive의 역사적 -itive 결합만 보수적으로 연결한다."
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-suffix-ary",
+      "canonicalForm": "-ary",
+      "kind": "suffix",
+      "originLanguage": "Latin/French",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "-ary",
+          "conditionKo": "명사·어근 뒤에서 관계나 성질을 나타내는 형용사를 만들 때"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-ary-relating",
+          "glossKo": [
+            "~에 관계된",
+            "~의 성질을 가진"
+          ],
+          "glossEn": [
+            "relating to",
+            "having the character of"
+          ],
+          "concepts": [
+            "concept-state"
+          ],
+          "function": "derivational",
+          "categoryChange": "noun→adjective",
+          "productivity": "medium",
+          "usageNoteKo": "라틴어·프랑스어 계열 어근 뒤에서 관계나 성질을 나타내는 형용사를 만든다.",
+          "etymologyNoteKo": "라틴어 -arius에서 프랑스어를 거쳐 영어 -ary로 이어졌다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ],
+          "examples": [
+            {
+              "wordId": "wd-primary",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ary의 ~에 관계된 의미로 연결된다."
+            },
+            {
+              "wordId": "wd-import-military-adj",
+              "mode": "synchronic",
+              "noteKo": "현대 영어에서 -ary의 ~에 관계된 의미로 연결된다."
+            }
           ]
         }
       ],
@@ -3754,6 +4264,116 @@
       },
       "sources": [
         "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-primary",
+      "lemma": "primary",
+      "partOfSpeech": [
+        "adjective",
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-primary-1",
+          "ko": [
+            "주된",
+            "가장 중요한",
+            "첫째의"
+          ],
+          "en": [
+            "first or earliest in a group or series",
+            "main, principal, or chief"
+          ],
+          "concepts": []
+        },
+        {
+          "id": "wds-primary-2",
+          "ko": [
+            "예비선거",
+            "기초 요소"
+          ],
+          "en": [
+            "a preliminary election to select a candidate",
+            "a fundamental or irreducible component"
+          ],
+          "concepts": []
+        }
+      ],
+      "forms": [
+        {
+          "form": "more primary",
+          "type": "comparative"
+        },
+        {
+          "form": "most primary",
+          "type": "superlative"
+        },
+        {
+          "form": "primaries",
+          "type": "plural"
+        }
+      ],
+      "relations": [
+        {
+          "type": "related-family",
+          "targetWordId": "wd-primitive",
+          "transparency": "semi-transparent",
+          "noteKo": "두 단어 모두 라틴어 primus(첫째의)에서 이어진 prim 어원 가족이다."
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-primary-etymological",
+          "wordSenseId": "wds-primary-1",
+          "mode": "etymological",
+          "transparency": "semi-transparent",
+          "explanationKo": "라틴어 primus(첫째의)에서 온 prim과 관계·성질을 나타내는 -ary로 연결된다.",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "prim",
+              "role": "root",
+              "elementSenseId": "els-prim-first"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "ary",
+              "role": "suffix",
+              "elementSenseId": "els-ary-relating"
+            }
+          ]
+        }
+      ],
+      "pronunciations": [
+        {
+          "ipa": "/ˈpɹaɪ.m(ə.)ɹi/",
+          "variety": "UK",
+          "sourceId": "src-wiktionary"
+        },
+        {
+          "ipa": "/ˈpɹaɪˌmɛɹ.i/",
+          "variety": "US",
+          "sourceId": "src-wiktionary"
+        }
+      ],
+      "etymology": {
+        "summaryKo": "라틴어 primarius(첫째 등급의, 주요한)에서 왔으며, primus(첫째의)와 -arius(영어 -ary의 바탕)가 결합한 말이다.",
+        "summaryEn": "Borrowed from Latin primarius, from primus (first) plus -arius, the source of English -ary.",
+        "originLanguages": [
+          "Latin"
+        ],
+        "sourceIds": [
+          "src-wiktionary",
+          "src-editorial"
+        ]
+      },
+      "sources": [
         "src-wiktionary",
         "src-editorial"
       ]
