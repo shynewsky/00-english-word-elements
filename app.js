@@ -8,6 +8,7 @@ const state = {
   concepts: new Map(),
   sources: new Map(),
   familyMembers: new Map(),
+  elementUsagesByWord: new Map(),
 };
 
 const normalize = (value = '') => value.normalize('NFKC').trim().toLocaleLowerCase('en');
@@ -114,6 +115,7 @@ function initMaps(data) {
   state.sources = new Map(data.sources.map((source) => [source.id, source]));
   state.elementSenses = new Map();
   state.familyMembers = new Map();
+  state.elementUsagesByWord = new Map();
   for (const word of data.words) {
     if (!word.familyHeadwordId) continue;
     if (!state.familyMembers.has(word.familyHeadwordId)) state.familyMembers.set(word.familyHeadwordId, []);
@@ -123,6 +125,28 @@ function initMaps(data) {
   for (const element of data.elements) {
     for (const sense of element.senses) {
       state.elementSenses.set(sense.id, { element, sense });
+    }
+  }
+  const addUsage = (wordId, usage) => {
+    if (!state.words.has(wordId)) return;
+    if (!state.elementUsagesByWord.has(wordId)) state.elementUsagesByWord.set(wordId, []);
+    const usages = state.elementUsagesByWord.get(wordId);
+    const existingIndex = usages.findIndex((item) => item.sense.id === usage.sense.id);
+    if (existingIndex < 0) usages.push(usage);
+    else if (usage.evidence === 'analysis') usages[existingIndex] = usage;
+  };
+  for (const word of data.words) {
+    for (const analysis of word.analyses || []) {
+      for (const part of analysis.parts || []) {
+        if (!part.elementSenseId) continue;
+        const record = state.elementSenses.get(part.elementSenseId);
+        if (record) addUsage(word.id, { ...record, evidence: 'analysis', mode: analysis.mode, noteKo: analysis.explanationKo });
+      }
+    }
+  }
+  for (const element of data.elements) {
+    for (const sense of element.senses) {
+      for (const example of sense.examples || []) addUsage(example.wordId, { element, sense, evidence: 'reviewed-link', mode: example.mode, noteKo: example.noteKo });
     }
   }
 }
@@ -144,25 +168,63 @@ function scoreText(query, value, weights) {
   return 0;
 }
 
+function textMatchKind(query, value, useLoose = false) {
+  const q = normalize(query);
+  const v = normalize(value);
+  if (!q || !v) return 'none';
+  if (v === q) return 'exact';
+  if (useLoose) {
+    const qLoose = loose(query);
+    const vLoose = loose(value);
+    if (vLoose === qLoose) return 'exact';
+    if (vLoose.startsWith(qLoose)) return 'prefix';
+    if (vLoose.includes(qLoose)) return 'substring';
+  }
+  if (v.startsWith(q)) return 'prefix';
+  if (v.includes(q)) return 'substring';
+  return 'none';
+}
+
 function bestWordMatch(word, query, mode) {
-  let best = { score: 0, reason: '', familyMember: null };
-  const consider = (score, reason, familyMember = null) => {
-    if (score > best.score) best = { score, reason, familyMember };
+  let best = { score: 0, reason: '', familyMember: null, matchKind: 'none' };
+  const consider = (score, reason, familyMember = null, matchKind = 'other') => {
+    if (score > best.score) best = { score, reason, familyMember, matchKind };
   };
 
   if (mode !== 'meaning') {
-    consider(scoreText(query, word.lemma, { exact: 140, prefix: 100, includes: 65 }), '표제어 일치');
+    const lemmaKind = textMatchKind(query, word.lemma);
+    const lemmaReason = lemmaKind === 'exact' ? '표제어 정확 일치' : lemmaKind === 'prefix' ? `‘${query}’으로 시작하는 표제어` : '표제어 철자 일부 일치';
+    consider(scoreText(query, word.lemma, { exact: 140, prefix: 100, includes: 65 }), lemmaReason, null, lemmaKind);
     for (const form of word.forms) {
-      consider(scoreText(query, form.form, { exact: 134, prefix: 94, includes: 58 }), `활용형 ${form.form}을 통해 찾음`);
+      const formKind = textMatchKind(query, form.form);
+      consider(scoreText(query, form.form, { exact: 134, prefix: 94, includes: 58 }), `활용형 ${form.form}을 통해 찾음`, null, formKind === 'exact' ? 'form' : formKind);
+    }
+
+    for (const usage of state.elementUsagesByWord.get(word.id) || []) {
+      const aliases = [usage.element.canonicalForm, ...usage.element.allomorphs.map((item) => item.form)];
+      if (aliases.some((alias) => textMatchKind(query, alias, true) === 'exact')) {
+        consider(132, `${usage.element.canonicalForm} ${elementKindLabel(usage.element.kind)} 검수 연결`, null, 'morphology');
+      }
+    }
+
+    for (const relation of word.relations || []) {
+      const target = state.words.get(relation.targetWordId);
+      if (target && textMatchKind(query, target.lemma) === 'exact') consider(128, `${target.lemma}에서 이어지는 ${relationLabel(relation.type)}`, null, 'family');
+    }
+    if (word.familyHeadwordId && word.familyHeadwordId !== word.id) {
+      const headword = state.words.get(word.familyHeadwordId);
+      if (headword && textMatchKind(query, headword.lemma) === 'exact') consider(128, `${headword.lemma} 단어 가족`, null, 'family');
     }
     if (word.familyHeadwordId === word.id) {
       for (const member of state.familyMembers.get(word.id) || []) {
         if (member.id === word.id) continue;
         const memberScore = scoreText(query, member.lemma, { exact: 128, prefix: 96, includes: 67 });
-        consider(memberScore, `${member.lemma}가 속한 어원 가족`, memberScore ? member : null);
+        const memberKind = textMatchKind(query, member.lemma);
+        consider(memberScore, `${member.lemma}가 속한 어원 가족`, memberScore ? member : null, memberKind === 'exact' ? 'family' : memberKind);
         for (const form of member.forms || []) {
           const formScore = scoreText(query, form.form, { exact: 124, prefix: 90, includes: 62 });
-          consider(formScore, `${form.form}가 속한 어원 가족`, formScore ? member : null);
+          const formKind = textMatchKind(query, form.form);
+          consider(formScore, `${form.form}가 속한 어원 가족`, formScore ? member : null, formKind === 'exact' ? 'family' : formKind);
         }
       }
     }
@@ -170,34 +232,34 @@ function bestWordMatch(word, query, mode) {
 
   for (const meaning of word.meanings) {
     for (const text of [...meaning.ko, ...meaning.en]) {
-      consider(scoreText(query, text, { exact: 98, prefix: 84, includes: 72 }), `단어 뜻 '${text}'와 일치`);
+      consider(scoreText(query, text, { exact: 98, prefix: 84, includes: 72 }), `단어 뜻 '${text}'와 일치`, null, 'meaning');
     }
     for (const text of conceptText(meaning.concepts, 'ko').concat(conceptText(meaning.concepts, 'en'))) {
-      consider(scoreText(query, text, { exact: 94, prefix: 78, includes: 68 }), `의미 개념 '${text}'와 일치`);
+      consider(scoreText(query, text, { exact: 94, prefix: 78, includes: 68 }), `의미 개념 '${text}'와 일치`, null, 'meaning');
     }
   }
   return best;
 }
 
 function bestElementMatch(element, query, mode) {
-  let best = { score: 0, reason: '' };
-  const consider = (score, reason) => {
-    if (score > best.score) best = { score, reason };
+  let best = { score: 0, reason: '', matchKind: 'none' };
+  const consider = (score, reason, matchKind = 'other') => {
+    if (score > best.score) best = { score, reason, matchKind };
   };
 
   if (mode !== 'meaning') {
-    consider(scoreText(query, element.canonicalForm, { exact: 122, looseExact: 120, prefix: 90, includes: 64, useLoose: true }), '형태소 대표형 일치');
+    consider(scoreText(query, element.canonicalForm, { exact: 146, looseExact: 144, prefix: 104, includes: 64, useLoose: true }), '형태소 대표형 정확 일치', textMatchKind(query, element.canonicalForm, true));
     for (const allomorph of element.allomorphs) {
-      consider(scoreText(query, allomorph.form, { exact: 118, looseExact: 116, prefix: 88, includes: 62, useLoose: true }), `이형태 ${allomorph.form}와 일치`);
+      consider(scoreText(query, allomorph.form, { exact: 142, looseExact: 140, prefix: 102, includes: 62, useLoose: true }), `이형태 ${allomorph.form}와 일치`, textMatchKind(query, allomorph.form, true));
     }
   }
 
   for (const sense of element.senses) {
     for (const text of [...sense.glossKo, ...sense.glossEn]) {
-      consider(scoreText(query, text, { exact: 102, prefix: 86, includes: 74 }), `형태소 뜻 '${text}'와 일치`);
+      consider(scoreText(query, text, { exact: 102, prefix: 86, includes: 74 }), `형태소 뜻 '${text}'와 일치`, 'meaning');
     }
     for (const text of conceptText(sense.concepts, 'ko').concat(conceptText(sense.concepts, 'en'))) {
-      consider(scoreText(query, text, { exact: 100, prefix: 82, includes: 70 }), `의미 개념 '${text}'와 일치`);
+      consider(scoreText(query, text, { exact: 100, prefix: 82, includes: 70 }), `의미 개념 '${text}'와 일치`, 'meaning');
     }
   }
   return best;
@@ -205,7 +267,7 @@ function bestElementMatch(element, query, mode) {
 
 function search(query, mode = 'all', elementKind = 'all') {
   if (!query.trim()) return [];
-  const results = [];
+  let results = [];
   if (mode === 'all' || mode === 'word' || mode === 'meaning') {
     for (const word of state.data.words) {
       const match = bestWordMatch(word, query, mode);
@@ -219,7 +281,35 @@ function search(query, mode = 'all', elementKind = 'all') {
       if (match.score > 0) results.push({ type: 'element', entity: element, ...match });
     }
   }
-  return results.sort((a, b) => b.score - a.score || a.entity.id.localeCompare(b.entity.id)).slice(0, 80);
+
+  if (mode !== 'meaning') {
+    const hasExact = results.some((result) => result.matchKind === 'exact');
+    const hasStrong = results.some((result) => result.score >= 84);
+    if (hasExact) results = results.filter((result) => ['exact', 'form', 'family', 'morphology'].includes(result.matchKind));
+    else if (hasStrong) results = results.filter((result) => result.score >= 84);
+  }
+
+  results.sort((left, right) => right.score - left.score
+    || Number(right.entity.status !== 'draft') - Number(left.entity.status !== 'draft')
+    || left.entity.id.localeCompare(right.entity.id));
+  const grouped = [];
+  const groupedWords = new Map();
+  for (const result of results) {
+    if (result.type !== 'word') {
+      grouped.push(result);
+      continue;
+    }
+    const key = normalize(result.entity.lemma);
+    const existing = groupedWords.get(key);
+    if (existing) {
+      existing.variants.push(result.entity);
+      continue;
+    }
+    const groupedResult = { ...result, variants: [result.entity] };
+    groupedWords.set(key, groupedResult);
+    grouped.push(groupedResult);
+  }
+  return grouped.slice(0, 80);
 }
 
 function spellingKey(value = '') {
@@ -332,13 +422,15 @@ function setSearchRoute(query, mode = 'all', kind = 'all') {
 function resultCard(result, query) {
   if (result.type === 'word') {
     const word = result.entity;
+    const variants = result.variants || [word];
+    const combinedPartsOfSpeech = unique(variants.flatMap((variant) => variant.partOfSpeech));
     const isFamilyResult = Boolean(result.familyMember);
     const familyMembers = state.familyMembers.get(word.id) || [];
     const href = `#/word/${encodeHash(word.id)}?from=${encodeHash(query)}`;
     return `<a class="result-row${isFamilyResult ? ' family-result' : ''}" href="${href}">
       <span class="result-kind${isFamilyResult ? ' family' : ''}">${isFamilyResult ? '단어 가족' : '단어'}</span>
       <span class="result-entry">
-        <span class="result-title-line"><strong>${escapeHtml(word.lemma)}</strong>${word.partOfSpeech.map((pos) => `<span class="pos-label">${escapeHtml(posLabel(pos))}</span>`).join('')}</span>
+        <span class="result-title-line"><strong>${escapeHtml(word.lemma)}</strong>${combinedPartsOfSpeech.map((pos) => `<span class="pos-label">${escapeHtml(posLabel(pos))}</span>`).join('')}${variants.length > 1 ? `<span class="merged-label">${variants.length}개 품사 레코드 통합</span>` : ''}</span>
         <span class="result-gloss">${isFamilyResult ? escapeHtml(familyMembers.map((member) => member.lemma).join(' · ')) : escapeHtml(word.meanings[0]?.ko?.join(', ') || '')}</span>
         <span class="match-reason">${escapeHtml(result.reason)}</span>
       </span>
@@ -420,8 +512,56 @@ function renderSearch(route) {
   document.querySelector('#kind-filter').addEventListener('change', (event) => setSearchRoute(query, mode, event.target.value));
 }
 
+function elementUsagesForSense(senseId) {
+  const usages = [];
+  for (const [wordId, wordUsages] of state.elementUsagesByWord) {
+    const usage = wordUsages.find((item) => item.sense.id === senseId);
+    const word = state.words.get(wordId);
+    if (usage && word) usages.push({ word, ...usage });
+  }
+  return usages.sort((left, right) => Number(right.word.status !== 'draft') - Number(left.word.status !== 'draft') || left.word.lemma.localeCompare(right.word.lemma, 'en'));
+}
+
 function wordsUsingSense(senseId) {
-  return state.data.words.filter((word) => word.analyses.some((analysis) => analysis.parts.some((part) => part.elementSenseId === senseId)));
+  return elementUsagesForSense(senseId).map((usage) => usage.word);
+}
+
+function candidateWordsForElement(element, verifiedWordIds = new Set()) {
+  const aliases = unique([element.canonicalForm, ...element.canonicalForm.split('/'), ...element.allomorphs.map((item) => item.form)]
+    .map((value) => spellingKey(value)).filter((value) => value.length >= 3));
+  const matches = [];
+  for (const word of state.data.words) {
+    if (verifiedWordIds.has(word.id) || !/^[A-Za-z'-]+$/.test(word.lemma)) continue;
+    const key = spellingKey(word.lemma);
+    const matched = aliases.some((alias) => {
+      if (element.kind === 'prefix') return key.startsWith(alias);
+      if (element.kind === 'suffix') return key.endsWith(alias);
+      if (element.kind === 'combining-form' && element.canonicalForm.startsWith('-')) return key.endsWith(alias);
+      if (element.kind === 'combining-form' && element.canonicalForm.endsWith('-')) return key.startsWith(alias);
+      return key.includes(alias);
+    });
+    if (matched) matches.push(word);
+  }
+  matches.sort((left, right) => Number(right.status !== 'draft') - Number(left.status !== 'draft') || left.lemma.length - right.lemma.length || left.lemma.localeCompare(right.lemma, 'en'));
+  return { total: matches.length, words: matches.slice(0, 12) };
+}
+
+function renderElementUsageList(usages) {
+  if (!usages.length) return '<div class="consistent-empty"><strong>검수된 연결 단어가 없습니다.</strong><span>자동 철자 일치만으로 어원을 단정하지 않습니다.</span></div>';
+  return `<div class="element-example-grid">${usages.map(({ word, evidence, noteKo }) => `<a class="element-example-card" href="#/word/${encodeHash(word.id)}">
+    <span class="example-verification ${evidence === 'analysis' ? 'analysis' : ''}">${evidence === 'analysis' ? '상세 구조 분석' : '검수된 어원 연결'}</span>
+    <strong>${escapeHtml(word.lemma)}</strong>
+    <span>${escapeHtml(word.partOfSpeech.map(posLabel).join(' · '))} · ${word.status === 'draft' ? '자동 수집 표제어' : '검수 표제어'}</span>
+    <small>${escapeHtml(noteKo || word.meanings[0]?.ko?.join(', ') || '')}</small>
+  </a>`).join('')}</div>`;
+}
+
+function renderCandidateWords(candidates) {
+  if (!candidates.total) return '';
+  return `<details class="candidate-details"><summary>철자가 닮은 미검수 후보 ${candidates.total}개${candidates.total > candidates.words.length ? ` 중 ${candidates.words.length}개` : ''} 보기</summary>
+    <p>형태가 비슷하다는 뜻일 뿐, 같은 어원이라고 확정한 결과가 아닙니다.</p>
+    <div class="chip-list">${candidates.words.map((word) => `<a class="chip candidate" href="#/word/${encodeHash(word.id)}">${escapeHtml(word.lemma)}</a>`).join('')}</div>
+  </details>`;
 }
 
 function wordFamily(word) {
@@ -628,6 +768,16 @@ function familyRelationCard(fromWord, toWord, relation, linkedWord) {
   </a>`;
 }
 
+function renderWordElementConnections(usages) {
+  return `<article class="reviewed-link-card">
+    <div class="analysis-heading"><span>검수된 핵심 형태소 연결</span><div class="badges">${badge('전체 분해 전')}</div></div>
+    <div class="reviewed-link-grid">${usages.map(({ element, sense, noteKo }) => `<a href="#/element/${encodeHash(element.id)}?sense=${encodeHash(sense.id)}">
+      <span>${escapeHtml(elementKindLabel(element.kind))}</span><strong>${escapeHtml(element.canonicalForm)}</strong><small>${escapeHtml(sense.glossKo.join(', '))}</small>
+    </a>`).join('')}</div>
+    <p>전체 철자 분해는 아직 등록 전이지만, 표시된 형태소와의 어원 또는 파생 연결은 검수했습니다.</p>
+  </article>`;
+}
+
 function renderAnalysis(analysis) {
   const parts = analysis.parts.map((part, index) => {
     let href = '#/search';
@@ -671,7 +821,11 @@ function renderWord(route) {
   const familyGroup = familyOverview(word);
   const formCount = (word.forms || []).length;
   const grammarContent = renderGrammarContent(word);
-  const usedSenseIds = unique(word.analyses.flatMap((analysis) => analysis.parts.map((part) => part.elementSenseId)));
+  const linkedElementUsages = state.elementUsagesByWord.get(word.id) || [];
+  const usedSenseIds = unique([
+    ...word.analyses.flatMap((analysis) => analysis.parts.map((part) => part.elementSenseId)),
+    ...linkedElementUsages.map((usage) => usage.sense.id),
+  ]);
   const relatedGroups = usedSenseIds.map((senseId) => {
     const sense = senseById(senseId);
     const element = elementForSense(senseId);
@@ -708,7 +862,7 @@ function renderWord(route) {
 
       <section class="entry-section structure-section" id="structure">
         <div class="section-heading"><h2>단어 구조</h2><span>형태소와 기본 단어</span></div>
-        ${word.analyses.length ? word.analyses.map(renderAnalysis).join('') : `<div class="consistent-empty"><strong>검수된 구조 분석이 아직 없습니다.</strong><span>${isImported ? '자동 수집 단어는 잘못된 분해를 피하기 위해 검수 전에는 구조를 추측하지 않습니다.' : '더 작은 학습용 요소로 나누지 않는 기본 단어입니다.'}</span></div>`}
+        ${word.analyses.length ? word.analyses.map(renderAnalysis).join('') : linkedElementUsages.length ? renderWordElementConnections(linkedElementUsages) : `<div class="consistent-empty"><strong>검수된 구조 분석이 아직 없습니다.</strong><span>${isImported ? '자동 수집 단어는 잘못된 분해를 피하기 위해 검수 전에는 구조를 추측하지 않습니다.' : '더 작은 학습용 요소로 나누지 않는 기본 단어입니다.'}</span></div>`}
       </section>
 
       <section class="entry-section etymology-section" id="etymology">
@@ -747,6 +901,8 @@ function renderElement(route) {
   const element = state.elements.get(route.id);
   if (!element) return renderNotFound('형태소를 찾을 수 없습니다.');
   const requestedSense = route.params.get('sense');
+  const verifiedWordIds = new Set(element.senses.flatMap((sense) => elementUsagesForSense(sense.id).map((usage) => usage.word.id)));
+  const spellingCandidates = candidateWordsForElement(element, verifiedWordIds);
   app.innerHTML = `<div class="page detail-page">
     ${compactSearch(element.canonicalForm)}
     <div class="detail-crumb"><a class="back-link" href="#/search">검색</a><span>/</span><strong>${escapeHtml(element.canonicalForm)}</strong></div>
@@ -766,9 +922,9 @@ function renderElement(route) {
       </section>
 
       <section class="entry-section">
-        <h2>의미별 사용 단어</h2>
+        <div class="section-heading"><h2>의미별 연결 단어</h2><span>상세 분석과 검수된 어원 연결</span></div>
         ${element.senses.map((sense) => {
-          const examples = wordsUsingSense(sense.id);
+          const usages = elementUsagesForSense(sense.id);
           const highlighted = requestedSense === sense.id ? ' is-highlighted' : '';
           return `<article class="sense-card${highlighted}" id="${escapeHtml(sense.id)}">
             <p class="entry-type">${escapeHtml(sense.function)} · ${escapeHtml(sense.productivity)}</p>
@@ -776,11 +932,15 @@ function renderElement(route) {
             <div class="definition-pair"><div><strong>한국어</strong>${escapeHtml(sense.glossKo.join(', '))}</div><div><strong>English</strong>${escapeHtml(sense.glossEn.join(', '))}</div></div>
             <p>${escapeHtml(sense.usageNoteKo)}</p>
             <p class="muted">${escapeHtml(sense.etymologyNoteKo)}</p>
-            <div class="section-heading sub"><h3>이 의미로 사용된 단어</h3><span>${examples.length}개</span></div>
-            ${examples.length ? `<div class="chip-list">${examples.map((word) => `<a class="chip" href="#/word/${encodeHash(word.id)}">${escapeHtml(word.lemma)}</a>`).join('')}</div>` : '<p class="muted">예시 단어가 아직 없습니다.</p>'}
+            <div class="section-heading sub"><h3>검수된 연결 단어</h3><span>${usages.length}개</span></div>
+            ${renderElementUsageList(usages)}
             ${sourceLinks(sense.sources)}
           </article>`;
         }).join('')}
+        <div class="candidate-zone">
+          <div class="section-heading sub"><h3>추가 탐색 후보</h3><span>철자 기준 · 어원 미검수</span></div>
+          ${renderCandidateWords(spellingCandidates) || '<p class="muted">별도의 철자 후보가 없습니다.</p>'}
+        </div>
       </section>
     </article>
   </div>`;
@@ -804,8 +964,8 @@ function renderRoute() {
 
 async function load() {
   try {
-    const catalogUrl = new URL('data/catalog.json?v=0.5.2', document.baseURI);
-    const importedUrl = new URL('data/imported-words.json?v=0.5.2', document.baseURI);
+    const catalogUrl = new URL('data/catalog.json?v=0.6.0', document.baseURI);
+    const importedUrl = new URL('data/imported-words.json?v=0.6.0', document.baseURI);
     const [catalogResponse, importedResponse] = await Promise.all([fetch(catalogUrl), fetch(importedUrl)]);
     if (!catalogResponse.ok) throw new Error(`catalog HTTP ${catalogResponse.status}`);
     if (!importedResponse.ok) throw new Error(`imported words HTTP ${importedResponse.status}`);

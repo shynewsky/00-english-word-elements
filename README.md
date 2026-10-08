@@ -17,14 +17,16 @@ https://shynewsky.github.io/english-word-elements/
 - Separates inflectional forms from derived word-family relations such as `run → runner`
 - Labels category-changing derivations such as `available` (adjective) → `availability` (noun)
 - Searches canonical morphemes and allomorphs such as `in-`, `im-`, `il-`, `ir-`
-- Groups example words by the exact sense of a word element
-- Searches Korean and English meanings
+- Groups verified word connections by the exact sense of a word element
+- Separates reviewed morphology from collapsed spelling-only candidates
+- Merges same-lemma part-of-speech records in search results
+- Searches headwords, forms, Korean and English meanings without flooding exact matches with definition substrings
 - Suggests nearby words and their morphemes when a query is misspelled
 - Uses the same meaning → structure → etymology → grammar → family layout for every word
 - Distinguishes synchronic and etymological analyses
 - Displays source and license information
 
-Version 0.5 serves 5,036 unique entries: 37 curated words and 4,999 currently loaded automatic entries, plus 23 reviewed word elements. OEWN pronunciation and derivational links enrich the automatic layer; detailed morpheme and etymology analyses remain reviewed data. Imported entries are clearly labelled `자동 수집`.
+Version 0.6 serves 5,037 unique entries: 38 curated words and 4,999 currently loaded automatic entries, plus 24 reviewed word elements. Each reviewed element sense now has verified reverse links to words, while spelling-only candidates are kept separate and clearly marked as unverified. OEWN pronunciation and derivational links enrich the automatic layer; detailed morpheme and etymology analyses remain reviewed data. Imported entries are clearly labelled `자동 수집`.
 
 ## Architecture
 
@@ -50,7 +52,7 @@ There is no server database. Reviewable JSON remains in Git. GitHub Actions vali
 
 ```text
 data/catalog.json              reviewed editorial data
-data/imported-words.json        generated 5,000-word draft lexicon
+data/imported-words.json        current 5,000-word draft lexicon (refresh cap: 6,000)
 imports/source-manifest.json    source versions, sizes and selection rules
 schemas/catalog.schema.json     structural schema
 scripts/import-lexicon.mjs      public dump normalizer and importer
@@ -93,7 +95,8 @@ The validator checks:
 - globally unique and stable IDs
 - missing references
 - bilingual meanings
-- element-sense links
+- element-sense links and verified reverse examples
+- minimum reviewed coverage per element sense or an explicit waiver
 - ordered analysis parts
 - surface spelling coverage
 - inflection versus derivation separation
