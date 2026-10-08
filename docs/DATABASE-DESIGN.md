@@ -50,6 +50,10 @@ Required fields:
 - `forms[]`
 - `relations[]`
 - `analyses[]`
+- `pronunciations[]`
+- `etymology`
+- `familyHeadwordId`
+- `familySummaryKo`
 - `sources[]`
 - `status`
 
@@ -187,9 +191,13 @@ Element sense ← Analysis part ← Analysis ← Word
 Build a word family:
 
 ```text
+searched member → familyHeadwordId → family headword
+family headword ← all words sharing familyHeadwordId
 Word → relation parents
 Word ← reversed relation children
 ```
+
+`related-family` stores source-derived lexical-family evidence without asserting historical direction. `derived-from` is reserved for reviewed directional derivation.
 
 Meaning search:
 
