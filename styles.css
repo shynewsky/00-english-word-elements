@@ -67,6 +67,10 @@ main { min-height: calc(100vh - 150px); }
 .filter-select { padding: .42rem .65rem; border: 1px solid var(--line-dark); border-radius: 4px; background: white; color: var(--ink); }
 .result-status { margin: 0; padding: 17px 24px 12px; color: var(--muted); font-size: .9rem; }
 .result-status strong, .result-status b { color: var(--ink); }
+.lookup-notice { display: grid; gap: .35rem; padding: 15px 24px; border-bottom: 1px solid #ead99b; background: #fff9e8; }
+.lookup-notice strong { color: #594900; font-size: .86rem; }
+.lookup-notice span { color: #6c6040; font-size: .76rem; line-height: 1.55; }
+.lookup-notice button { padding: 0; border: 0; background: transparent; color: var(--green-dark); font: inherit; font-weight: 900; text-decoration: underline; cursor: pointer; }
 .results-list { border-top: 1px solid #f0f2f4; }
 .result-row { display: grid; grid-template-columns: 58px 1fr 24px; gap: 18px; align-items: start; padding: 22px 24px; border-bottom: 1px solid var(--line); text-decoration: none; transition: background .15s ease; }
 .result-row:hover, .result-row:focus-visible { outline: none; background: #f6fbff; }

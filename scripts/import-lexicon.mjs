@@ -16,7 +16,8 @@ for (const name of required) {
 const projectRoot = path.resolve(import.meta.dirname, '..');
 const outputPath = path.resolve(args.get('--output') || path.join(projectRoot, 'data', 'imported-words.json'));
 const curatedPath = path.join(projectRoot, 'data', 'catalog.json');
-const limit = Number(args.get('--limit') || 6000);
+const requestedLimit = args.get('--limit');
+const limit = requestedLimit ? Number(requestedLimit) : Infinity;
 const generatedAt = args.get('--generated-at') || new Date().toISOString().slice(0, 10);
 const oewnDir = path.resolve(args.get('--oewn-dir'));
 const koWiktionaryPath = path.resolve(args.get('--ko-wiktionary'));
@@ -30,7 +31,9 @@ const uniquePush = (array, value, max = Infinity) => {
   if (value && array.length < max && !array.includes(value)) array.push(value);
 };
 const cleanGloss = (value = '') => String(value).replace(/\s+/g, ' ').trim().slice(0, 300);
-const isSingleEnglishWord = (value) => /^[A-Za-z][A-Za-z'-]*$/.test(value) && value.length <= 40;
+const isSingleEnglishWord = (value) => /^[A-Za-z][A-Za-z'’-]*$/.test(value) && value.length <= 40;
+const splitSurfaceForms = (value = '') => uniquePushForms(normalize(value).split(/\s*(?:,|;|\bor\b)\s*/i));
+const uniquePushForms = (values) => [...new Set(values.filter((value) => isSingleEnglishWord(value) || /^[A-Za-z][A-Za-z'’ -]*$/.test(value)))];
 
 async function eachJsonLine(filePath, callback) {
   const input = createReadStream(filePath, { encoding: 'utf8' });
@@ -86,7 +89,6 @@ await eachJsonLine(simpleWiktionaryPath, (record) => {
     if (item.en.length >= 3) break;
   }
   for (const sourceForm of record.forms || []) {
-    const form = normalize(sourceForm.form || '');
     const tags = new Set(sourceForm.tags || []);
     let type = null;
     if (tags.has('third-person') && tags.has('singular')) type = 'third-person';
@@ -96,8 +98,9 @@ await eachJsonLine(simpleWiktionaryPath, (record) => {
     else if (tags.has('plural')) type = 'plural';
     else if (tags.has('comparative')) type = 'comparative';
     else if (tags.has('superlative')) type = 'superlative';
-    if (type && form && !item.forms.some((candidate) => candidate.form === form && candidate.type === type)) {
-      item.forms.push({ form, type });
+    if (!type) continue;
+    for (const form of splitSurfaceForms(sourceForm.form || '')) {
+      if (!item.forms.some((candidate) => candidate.form === form && candidate.type === type)) item.forms.push({ form, type });
     }
   }
   simple.set(key, item);
@@ -197,7 +200,8 @@ function createId(lemma, pos) {
   return id;
 }
 
-const selected = candidates.slice(0, limit).map((item) => ({ ...item, id: createId(item.lemma, item.pos) }));
+const selectedCandidates = Number.isFinite(limit) ? candidates.slice(0, limit) : candidates;
+const selected = selectedCandidates.map((item) => ({ ...item, id: createId(item.lemma, item.pos) }));
 const wordIdByKey = new Map([...curatedByKey].map(([key, word]) => [key, word.id]));
 for (const item of selected) wordIdByKey.set(item.key, item.id);
 
@@ -253,8 +257,9 @@ const output = {
   meta: {
     generatedAt,
     wordCount: words.length,
-    requestedLimit: limit,
+    requestedLimit: Number.isFinite(limit) ? limit : null,
     candidateCount: candidates.length,
+    selectionPolicy: Number.isFinite(limit) ? 'ranked-cap' : 'all-qualified-candidates',
     sources: {
       oewn: '2025',
       koreanWiktionary: 'Kaikki/Wiktextract raw dump',

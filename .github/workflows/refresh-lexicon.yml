@@ -43,7 +43,6 @@ jobs:
             --ko-wiktionary .source/kowiktionary.jsonl \
             --simple-wiktionary .source/simplewiktionary.jsonl \
             --output data/imported-words.json \
-            --limit 6000 \
             --generated-at "$previous_date"
 
       - name: Validate generated data
