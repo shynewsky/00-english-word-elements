@@ -580,7 +580,7 @@ function renderWord(route) {
       </section>
 
       <section class="entry-section" id="family">
-        <div class="section-heading"><h2>단어 가족</h2><span>${familyGroup.members.length > 1 ? `${familyGroup.members.length}개 어원 가족` : '파생 관계'}</span></div>
+        <div class="section-heading"><h2>단어 가족</h2><span>${familyGroup.members.length > 1 ? `${familyGroup.members.length}개 단어 가족` : '파생 관계'}</span></div>
         ${familyGroup.members.length > 1 ? `<div class="family-root-nav"><span>가족 대표 표제어</span><a href="#/word/${encodeHash(familyGroup.headword.id)}"><strong>${escapeHtml(familyGroup.headword.lemma)}</strong></a></div>
           ${familyGroup.headword.familySummaryKo ? `<p class="family-summary">${escapeHtml(familyGroup.headword.familySummaryKo)}</p>` : ''}
           <div class="family-member-grid">${familyGroup.members.map((member) => renderFamilyMemberCard(member, word)).join('')}</div>` : `<p class="section-description">접사가 붙거나 품사가 달라져 만들어진 새 단어입니다.</p>
