@@ -2,8 +2,10 @@ import { readFile } from 'node:fs/promises';
 
 const catalogUrl = new URL('../data/catalog.json', import.meta.url);
 const importedUrl = new URL('../data/imported-words.json', import.meta.url);
+const packageUrl = new URL('../package.json', import.meta.url);
 const catalog = JSON.parse(await readFile(catalogUrl, 'utf8'));
 const imported = JSON.parse(await readFile(importedUrl, 'utf8'));
+const packageData = JSON.parse(await readFile(packageUrl, 'utf8')); 
 const curatedLemmaPosKeys = new Set(catalog.words.map((word) => `${word.lemma.toLocaleLowerCase('en')}|${[...word.partOfSpeech].sort().join(',')}`));
 const importedWithoutCuratedDuplicates = imported.words.filter((word) => !curatedLemmaPosKeys.has(`${word.lemma.toLocaleLowerCase('en')}|${[...word.partOfSpeech].sort().join(',')}`));
 const data = { ...catalog, words: [...catalog.words, ...importedWithoutCuratedDuplicates] };
@@ -14,8 +16,16 @@ const warn = (message) => warnings.push(message);
 const idPattern = /^[a-z][a-z0-9]*(?:[-._][a-z0-9]+)*$/;
 const statuses = new Set(['draft', 'reviewed', 'published']);
 const relationTypes = new Set(['derived-from', 'compound', 'variant-of', 'related-family']);
+const formTypes = new Set(['third-person', 'third-person/plural', 'past', 'past-participle', 'present-participle', 'plural', 'comparative', 'superlative', 'variant']);
+const analysisModes = new Set(['synchronic', 'etymological']);
+const transparencyValues = new Set(['transparent', 'semi-transparent', 'opaque']);
+const analysisRoles = new Set(['base', 'prefix', 'suffix', 'root']);
 const ids = new Map();
+if (catalog.meta.schemaVersion !== 2) fail(`Catalog schemaVersion must be 2, found ${catalog.meta.schemaVersion}`);
+if (catalog.meta.dataVersion !== packageData.version) fail(`Catalog dataVersion ${catalog.meta.dataVersion} does not match package version ${packageData.version}`);
 if (imported.meta.wordCount !== imported.words.length) fail(`Imported metadata says ${imported.meta.wordCount} words, found ${imported.words.length}`);
+if (imported.meta.wordCount > imported.meta.candidateCount) fail(`Imported wordCount ${imported.meta.wordCount} exceeds candidateCount ${imported.meta.candidateCount}`);
+if (imported.meta.selectionPolicy === 'all-qualified-candidates' && imported.meta.wordCount !== imported.meta.candidateCount) fail(`All-qualified import must retain every candidate (${imported.meta.wordCount}/${imported.meta.candidateCount})`);
 
 function register(id, type) {
   if (!idPattern.test(id)) fail(`${type} has an invalid id: ${id}`);
@@ -92,20 +102,34 @@ for (const word of data.words) {
     for (const conceptId of meaning.concepts || []) if (!conceptIds.has(conceptId)) fail(`${meaning.id} references missing concept ${conceptId}`);
   }
 
+  const localFormKeys = new Set();
   for (const form of word.forms || []) {
+    if (!form?.form?.trim()) {
+      fail(`${word.id} has an empty form`);
+      continue;
+    }
+    if (!formTypes.has(form.type)) fail(`${word.id} form ${form.form} has unsupported type ${form.type}`);
+    if (/[,;]/.test(form.form)) fail(`${word.id} form '${form.form}' contains multiple surface forms; split them into separate records`);
     const key = form.form.normalize('NFKC').toLocaleLowerCase('en');
+    const localKey = `${key}|${form.type}`;
+    if (localFormKeys.has(localKey)) fail(`${word.id} repeats form ${form.form} (${form.type})`);
+    localFormKeys.add(localKey);
     if (!formIndex.has(key)) formIndex.set(key, []);
     formIndex.get(key).push(word.id);
   }
 
   for (const relation of word.relations || []) {
     if (!relationTypes.has(relation.type)) fail(`${word.id} has unsupported relation type ${relation.type}`);
+    if (relation.transparency && !transparencyValues.has(relation.transparency)) fail(`${word.id} relation to ${relation.targetWordId} has invalid transparency ${relation.transparency}`);
     if (!wordIds.has(relation.targetWordId)) fail(`${word.id} references missing related word ${relation.targetWordId}`);
     if (relation.targetWordId === word.id) fail(`${word.id} has a self relation`);
     if (relation.type === 'inflection') fail(`${word.id} models an inflection as a relation; use forms instead`);
   }
 
   for (const analysis of word.analyses || []) {
+    if (!analysisModes.has(analysis.mode)) fail(`${analysis.id} has invalid mode ${analysis.mode}`);
+    if (!transparencyValues.has(analysis.transparency)) fail(`${analysis.id} has invalid transparency ${analysis.transparency}`);
+    if (!analysis.explanationKo?.trim()) fail(`${analysis.id} needs a Korean explanation`);
     if (!wordSenseIds.has(analysis.wordSenseId)) fail(`${analysis.id} references missing word sense ${analysis.wordSenseId}`);
     if (!word.meanings.some((sense) => sense.id === analysis.wordSenseId)) fail(`${analysis.id} targets a sense outside ${word.id}`);
     if (!analysis.parts?.length) fail(`${analysis.id} has no parts`);
@@ -117,6 +141,8 @@ for (const word of data.words) {
       if (referenceCount !== 1) fail(`${analysis.id} part ${part.order} must reference exactly one element sense or word`);
       if (part.elementSenseId && !elementSenseToElement.has(part.elementSenseId)) fail(`${analysis.id} references missing element sense ${part.elementSenseId}`);
       if (part.wordId && !wordIds.has(part.wordId)) fail(`${analysis.id} references missing base word ${part.wordId}`);
+      if (!analysisRoles.has(part.role)) fail(`${analysis.id} part ${part.order} has invalid role ${part.role}`);
+      if (part.parentOrder === part.order) fail(`${analysis.id} part ${part.order} cannot parent itself`);
       if (part.parentOrder !== null && part.parentOrder !== undefined && !orders.includes(part.parentOrder)) fail(`${analysis.id} part ${part.order} has missing parent ${part.parentOrder}`);
       if (!part.surface) fail(`${analysis.id} part ${part.order} has no surface text`);
     }
