@@ -3,13 +3,13 @@
     "project": "English Word Elements",
     "repository": "english-word-elements",
     "schemaVersion": 1,
-    "dataVersion": "0.4.0",
+    "dataVersion": "0.5.0",
     "language": "en",
     "interfaceLanguages": [
       "ko",
       "en"
     ],
-    "updatedAt": "2026-10-07",
+    "updatedAt": "2026-10-08",
     "noticeKo": "검수된 형태소 분석과 공개 덤프에서 자동 수집한 확장 사전 데이터를 함께 제공합니다."
   },
   "sources": [
@@ -1037,6 +1037,211 @@
           "productivity": "high",
           "usageNoteKo": "형용사를 방식이나 태도를 나타내는 부사로 만든다.",
           "etymologyNoteKo": "고대 영어 -līċ 계열에서 발달했다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-prefix-ab",
+      "canonicalForm": "ab-",
+      "kind": "prefix",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "ab-",
+          "conditionKo": "기본형"
+        },
+        {
+          "form": "a-",
+          "conditionKo": "일부 자음 앞에서 축약된 형태"
+        },
+        {
+          "form": "abs-",
+          "conditionKo": "일부 라틴어계 단어에서 나타나는 형태"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-ab-away",
+          "glossKo": [
+            "~에서 벗어나",
+            "떨어져"
+          ],
+          "glossEn": [
+            "away from",
+            "off"
+          ],
+          "concepts": [],
+          "function": "derivational",
+          "categoryChange": null,
+          "productivity": "limited",
+          "usageNoteKo": "기준이나 상태에서 벗어남을 나타내는 라틴어계 접두사다.",
+          "etymologyNoteKo": "라틴어 ab에서 이어졌다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-prefix-per",
+      "canonicalForm": "per-",
+      "kind": "prefix",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "per-",
+          "conditionKo": "기본형"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-per-through",
+          "glossKo": [
+            "통하여",
+            "완전히"
+          ],
+          "glossEn": [
+            "through",
+            "thoroughly"
+          ],
+          "concepts": [],
+          "function": "derivational",
+          "categoryChange": null,
+          "productivity": "limited",
+          "usageNoteKo": "라틴어계 어휘에서 통과나 철저함을 나타낸다.",
+          "etymologyNoteKo": "라틴어 per에서 이어졌다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-root-spect",
+      "canonicalForm": "spect",
+      "kind": "root",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "spect",
+          "conditionKo": "과거분사 어간에서 나타나는 형태"
+        },
+        {
+          "form": "spec",
+          "conditionKo": "일부 파생어에서 나타나는 형태"
+        },
+        {
+          "form": "spic",
+          "conditionKo": "라틴어 동사 어간에서 나타나는 형태"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-spect-look",
+          "glossKo": [
+            "보다",
+            "바라보다"
+          ],
+          "glossEn": [
+            "look",
+            "see"
+          ],
+          "concepts": [],
+          "function": "lexical",
+          "categoryChange": null,
+          "productivity": "medium",
+          "usageNoteKo": "관찰과 시각에 관련된 단어를 만든다.",
+          "etymologyNoteKo": "라틴어 specere 및 과거분사 어간 spect-에서 이어졌다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-root-prim",
+      "canonicalForm": "prim",
+      "kind": "root",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "prim",
+          "conditionKo": "기본 결합형"
+        },
+        {
+          "form": "prime",
+          "conditionKo": "독립 단어로 쓰이는 형태"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-prim-first",
+          "glossKo": [
+            "첫째의",
+            "처음의"
+          ],
+          "glossEn": [
+            "first",
+            "earliest"
+          ],
+          "concepts": [],
+          "function": "lexical",
+          "categoryChange": null,
+          "productivity": "medium",
+          "usageNoteKo": "처음, 기초, 가장 이른 상태와 관련된 단어를 만든다.",
+          "etymologyNoteKo": "라틴어 primus(첫째의)에서 이어졌다.",
+          "sources": [
+            "src-wiktionary",
+            "src-editorial"
+          ]
+        }
+      ],
+      "status": "reviewed"
+    },
+    {
+      "id": "el-suffix-itive",
+      "canonicalForm": "-itive",
+      "kind": "suffix",
+      "originLanguage": "Latin",
+      "bound": true,
+      "allomorphs": [
+        {
+          "form": "-itive",
+          "conditionKo": "라틴어계 형용사에서 나타나는 결합형"
+        }
+      ],
+      "senses": [
+        {
+          "id": "els-itive-quality",
+          "glossKo": [
+            "성질을 가진",
+            "~에 관계된"
+          ],
+          "glossEn": [
+            "having the quality of",
+            "relating to"
+          ],
+          "concepts": [],
+          "function": "derivational",
+          "categoryChange": "root-to-adjective",
+          "productivity": "limited",
+          "usageNoteKo": "주로 라틴어에서 들어온 형용사에 남아 있는 결합형이다.",
+          "etymologyNoteKo": "라틴어 -itivus 계열에서 이어졌다.",
           "sources": [
             "src-wiktionary",
             "src-editorial"
@@ -2874,7 +3079,7 @@
           "wordSenseId": "wds-intuitive-1",
           "mode": "synchronic",
           "transparency": "transparent",
-          "explanationKo": "학습용 공시 분석에서는 intuit + -ive로 이해할 수 있다.",
+          "explanationKo": "intuit + -ive로 분석한다. 철자 tive가 한 덩어리처럼 보이지만 t는 intuit의 끝자음이고, 실제 접미사는 형용사를 만드는 -ive다.",
           "parts": [
             {
               "order": 1,
@@ -2888,7 +3093,8 @@
               "parentOrder": null,
               "surface": "ive",
               "role": "suffix",
-              "elementSenseId": "els-ive-quality"
+              "elementSenseId": "els-ive-quality",
+              "boundaryChangeNote": "t는 intuit에 속하며 접미사는 -ive"
             }
           ]
         }
@@ -3168,6 +3374,366 @@
       },
       "familyHeadwordId": "wd-intuit",
       "sources": [
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-normal-adj",
+      "lemma": "normal",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-normal-adj-1",
+          "ko": [
+            "정상적인",
+            "보통의",
+            "표준에 맞는"
+          ],
+          "en": [
+            "conforming to a norm or standard",
+            "usual or typical"
+          ],
+          "concepts": []
+        }
+      ],
+      "forms": [
+        {
+          "form": "more normal",
+          "type": "comparative"
+        },
+        {
+          "form": "most normal",
+          "type": "superlative"
+        }
+      ],
+      "relations": [],
+      "analyses": [],
+      "pronunciations": [
+        {
+          "ipa": "/ˈnɔːməl/",
+          "variety": "UK",
+          "sourceId": "src-oewn"
+        },
+        {
+          "ipa": "/ˈnɔɹməl/",
+          "variety": "US",
+          "sourceId": "src-oewn"
+        }
+      ],
+      "etymology": {
+        "summaryKo": "라틴어 norma(규칙, 표준)에서 만들어진 라틴어 normalis를 거쳐 영어에 들어왔다.",
+        "summaryEn": "From Latin normalis, from norma meaning a rule or standard.",
+        "originLanguages": [
+          "Latin"
+        ],
+        "sourceIds": [
+          "src-wiktionary",
+          "src-editorial"
+        ]
+      },
+      "familyHeadwordId": "wd-normal-adj",
+      "familySummaryKo": "normal을 기준으로 ab-(벗어나)가 붙은 abnormal과 같은 대비 어휘를 함께 살펴볼 수 있다.",
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-abnormal",
+      "lemma": "abnormal",
+      "partOfSpeech": [
+        "adjective"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-abnormal-1",
+          "ko": [
+            "비정상적인",
+            "보통과 다른",
+            "정상 범위를 벗어난"
+          ],
+          "en": [
+            "not normal, typical, or regular",
+            "departing from a norm"
+          ],
+          "concepts": []
+        }
+      ],
+      "forms": [
+        {
+          "form": "more abnormal",
+          "type": "comparative"
+        },
+        {
+          "form": "most abnormal",
+          "type": "superlative"
+        }
+      ],
+      "relations": [
+        {
+          "type": "derived-from",
+          "targetWordId": "wd-normal-adj",
+          "transparency": "transparent",
+          "noteKo": "normal에 ab-(~에서 벗어나)가 붙은 파생어다."
+        }
+      ],
+      "analyses": [
+        {
+          "id": "an-abnormal-synchronic",
+          "wordSenseId": "wds-abnormal-1",
+          "mode": "synchronic",
+          "transparency": "transparent",
+          "explanationKo": "ab-(정상 상태에서 벗어나) + normal(정상적인)로 분석한다.",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "ab",
+              "role": "prefix",
+              "elementSenseId": "els-ab-away"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "normal",
+              "role": "base",
+              "wordId": "wd-normal-adj"
+            }
+          ]
+        }
+      ],
+      "pronunciations": [
+        {
+          "ipa": "/ˌæbˈnɔː.məl/",
+          "variety": "UK",
+          "sourceId": "src-wiktionary"
+        },
+        {
+          "ipa": "/ˌæbˈnɔɹ.ml̩/",
+          "variety": "US",
+          "sourceId": "src-wiktionary"
+        }
+      ],
+      "etymology": {
+        "summaryKo": "영어 접두사 ab-(~에서 벗어나)와 normal의 결합으로 19세기에 자리 잡았다. 더 오래된 라틴어 abnormis와도 연결된다.",
+        "summaryEn": "From ab- + normal, replacing earlier anormal and abnormous; related to Latin abnormis.",
+        "originLanguages": [
+          "English",
+          "Latin"
+        ],
+        "sourceIds": [
+          "src-wiktionary",
+          "src-editorial"
+        ]
+      },
+      "familyHeadwordId": "wd-normal-adj",
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-perspective",
+      "lemma": "perspective",
+      "partOfSpeech": [
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-perspective-1",
+          "ko": [
+            "관점",
+            "시각",
+            "사물을 바라보는 방식"
+          ],
+          "en": [
+            "a way of regarding a situation or topic",
+            "a point of view"
+          ],
+          "concepts": []
+        },
+        {
+          "id": "wds-perspective-2",
+          "ko": [
+            "원근법",
+            "거리와 위치에 따른 시각적 표현"
+          ],
+          "en": [
+            "the appearance or representation of depth and relative distance"
+          ],
+          "concepts": []
+        }
+      ],
+      "forms": [
+        {
+          "form": "perspectives",
+          "type": "plural"
+        }
+      ],
+      "relations": [],
+      "analyses": [
+        {
+          "id": "an-perspective-etymological",
+          "wordSenseId": "wds-perspective-1",
+          "mode": "etymological",
+          "transparency": "semi-transparent",
+          "explanationKo": "역사적으로 per-(통하여) + spect(보다) + -ive로 연결된다. 현대 영어에서는 전체 단어 perspective로 익히는 편이 자연스럽다.",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "per",
+              "role": "prefix",
+              "elementSenseId": "els-per-through"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "spect",
+              "role": "root",
+              "elementSenseId": "els-spect-look"
+            },
+            {
+              "order": 3,
+              "parentOrder": null,
+              "surface": "ive",
+              "role": "suffix",
+              "elementSenseId": "els-ive-quality"
+            }
+          ]
+        }
+      ],
+      "pronunciations": [
+        {
+          "ipa": "/pɚˈspɛk.tɪv/",
+          "variety": "US",
+          "sourceId": "src-wiktionary"
+        }
+      ],
+      "etymology": {
+        "summaryKo": "중세 영어와 프랑스어를 거쳐 중세 라틴어 perspectiva ars(광학)에서 들어왔다. 라틴어 perspicere(꿰뚫어 보다)는 per-(통하여)와 specere(보다)의 결합이다.",
+        "summaryEn": "From Medieval Latin perspectiva ars, through French and Middle English; ultimately from per- plus specere, to look.",
+        "originLanguages": [
+          "Middle English",
+          "French",
+          "Medieval Latin",
+          "Latin"
+        ],
+        "sourceIds": [
+          "src-wiktionary",
+          "src-editorial"
+        ]
+      },
+      "sources": [
+        "src-oewn",
+        "src-wiktionary",
+        "src-editorial"
+      ]
+    },
+    {
+      "id": "wd-primitive",
+      "lemma": "primitive",
+      "partOfSpeech": [
+        "adjective",
+        "noun"
+      ],
+      "status": "reviewed",
+      "meanings": [
+        {
+          "id": "wds-primitive-1",
+          "ko": [
+            "원시적인",
+            "초기의",
+            "단순하고 기초적인"
+          ],
+          "en": [
+            "belonging to an early stage of development",
+            "simple or basic"
+          ],
+          "concepts": []
+        },
+        {
+          "id": "wds-primitive-2",
+          "ko": [
+            "기초 요소",
+            "다른 형태의 바탕이 되는 기본형"
+          ],
+          "en": [
+            "a basic or original element from which another form is derived"
+          ],
+          "concepts": []
+        }
+      ],
+      "forms": [
+        {
+          "form": "more primitive",
+          "type": "comparative"
+        },
+        {
+          "form": "most primitive",
+          "type": "superlative"
+        },
+        {
+          "form": "primitives",
+          "type": "plural"
+        }
+      ],
+      "relations": [],
+      "analyses": [
+        {
+          "id": "an-primitive-etymological",
+          "wordSenseId": "wds-primitive-1",
+          "mode": "etymological",
+          "transparency": "semi-transparent",
+          "explanationKo": "라틴어 prim-(첫째, 처음)과 형용사 결합형 -itive로 이해할 수 있다.",
+          "parts": [
+            {
+              "order": 1,
+              "parentOrder": null,
+              "surface": "prim",
+              "role": "root",
+              "elementSenseId": "els-prim-first"
+            },
+            {
+              "order": 2,
+              "parentOrder": null,
+              "surface": "itive",
+              "role": "suffix",
+              "elementSenseId": "els-itive-quality"
+            }
+          ]
+        }
+      ],
+      "pronunciations": [
+        {
+          "ipa": "/ˈpɹɪmɪtɪv/",
+          "variety": "",
+          "sourceId": "src-wiktionary"
+        }
+      ],
+      "etymology": {
+        "summaryKo": "중세 영어와 고대 프랑스어 primitif를 거쳐 라틴어 primitivus(그 종류에서 가장 이른)에서 들어왔다. 뿌리는 primus(첫째의)다.",
+        "summaryEn": "From Middle English and Old French primitif, from Latin primitivus, from primus meaning first.",
+        "originLanguages": [
+          "Middle English",
+          "Old French",
+          "Latin"
+        ],
+        "sourceIds": [
+          "src-wiktionary",
+          "src-editorial"
+        ]
+      },
+      "sources": [
+        "src-oewn",
         "src-wiktionary",
         "src-editorial"
       ]
