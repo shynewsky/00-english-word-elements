@@ -10,7 +10,9 @@ The project uses two mergeable static JSON layers.
 - SQLite is not canonical because binary database files are difficult to diff and merge in Git.
 - The browser merges both files and performs search locally.
 
-At the current 5,000 imported words, with a refresh cap of 6,000, the combined payload remains practical. The catalog can later be sharded without changing IDs or relationships.
+There is no REST or GraphQL server API. The deployed JSON files are versioned static read assets, and `app.js` performs lookup in the browser. The ERD below is a logical model for those nested JSON records, not a physical relational database schema.
+
+The refresh job now retains every record that satisfies the documented source rule instead of truncating an arbitrarily ranked top-N list. If payload size becomes impractical, the next step is sharding and generated indexes, not silently omitting qualified words.
 
 ## 2. Logical relationship model
 
@@ -43,7 +45,7 @@ erDiagram
 
 A dictionary-level lemma. The same spelling may have multiple Word records when part of speech or etymology differs. Search groups those records into one visible lemma result while preserving the underlying records and part-of-speech labels.
 
-Required fields:
+Fields required for every Word:
 
 - `id`
 - `lemma`
@@ -52,12 +54,10 @@ Required fields:
 - `forms[]`
 - `relations[]`
 - `analyses[]`
-- `pronunciations[]`
-- `etymology`
-- `familyHeadwordId`
-- `familySummaryKo`
 - `sources[]`
 - `status`
+
+Optional enrichment fields are `pronunciations[]`, `etymology`, `familyHeadwordId` and `familySummaryKo`. Reviewed records should populate them when evidence exists; draft imports may omit them rather than fabricate analysis.
 
 ### Word sense
 
@@ -174,7 +174,18 @@ Example:
 
 A source and licensing record. Every reviewed word and element sense must reference at least one Source.
 
-## 4. Query paths
+## 4. Static read contract
+
+The public read surface is:
+
+```text
+GET /data/catalog.json
+GET /data/imported-words.json
+```
+
+These are complete file reads, not parameterized query endpoints. Stable IDs are the contract between files and routes. Search, filtering and joins run client-side. A write API, user accounts and server-side CRUD are intentionally out of scope for GitHub Pages.
+
+## 5. Query paths
 
 Resolve a form to its lemma:
 
@@ -211,7 +222,7 @@ Meaning search:
 query → Concept labels / Word-sense glosses / Element-sense glosses
 ```
 
-## 5. Required invariants
+## 6. Required invariants
 
 1. Every ID is globally unique and immutable.
 2. Every reference points to an existing record.
@@ -226,9 +237,11 @@ query → Concept labels / Word-sense glosses / Element-sense glosses
 11. Derivation cycles fail validation.
 12. Search results and family groups are generated views, not canonical facts.
 
-## 6. Search indexes
+## 7. Search indexes
 
-The current 5,000-word expansion is still small enough to search directly in memory. When the catalog grows past roughly 10,000 entries, CI should generate:
+The browser currently builds lookup state from the two JSON assets and searches on explicit submission, not on every keystroke. Exact headword/form search and definition search are separate user intents so a missing headword is not replaced by arbitrary definition sentences.
+
+As the full qualified corpus grows, CI should generate:
 
 ```text
 form-to-word.json
@@ -241,7 +254,7 @@ word-family.json
 
 All lookup values must be arrays because homographs and identical allomorph spellings can resolve to multiple records.
 
-## 7. Scale-up path
+## 8. Scale-up path
 
 1. Split `catalog.json` into merge-friendly entity files.
 2. Add claim-level Citation entities.
