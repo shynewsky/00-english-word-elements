@@ -4,13 +4,16 @@ const catalogUrl = new URL('../data/catalog.json', import.meta.url);
 const importedUrl = new URL('../data/imported-words.json', import.meta.url);
 const catalog = JSON.parse(await readFile(catalogUrl, 'utf8'));
 const imported = JSON.parse(await readFile(importedUrl, 'utf8'));
-const data = { ...catalog, words: [...catalog.words, ...imported.words] };
+const curatedLemmaPosKeys = new Set(catalog.words.map((word) => `${word.lemma.toLocaleLowerCase('en')}|${[...word.partOfSpeech].sort().join(',')}`));
+const importedWithoutCuratedDuplicates = imported.words.filter((word) => !curatedLemmaPosKeys.has(`${word.lemma.toLocaleLowerCase('en')}|${[...word.partOfSpeech].sort().join(',')}`));
+const data = { ...catalog, words: [...catalog.words, ...importedWithoutCuratedDuplicates] };
 const errors = [];
 const warnings = [];
 const fail = (message) => errors.push(message);
 const warn = (message) => warnings.push(message);
 const idPattern = /^[a-z][a-z0-9]*(?:[-._][a-z0-9]+)*$/;
 const statuses = new Set(['draft', 'reviewed', 'published']);
+const relationTypes = new Set(['derived-from', 'compound', 'variant-of', 'related-family']);
 const ids = new Map();
 if (imported.meta.wordCount !== imported.words.length) fail(`Imported metadata says ${imported.meta.wordCount} words, found ${imported.words.length}`);
 
@@ -66,6 +69,15 @@ for (const word of data.words) {
   lemmaPosKeys.add(lemmaPosKey);
   for (const sourceId of word.sources || []) if (!sourceIds.has(sourceId)) fail(`${word.id} references missing source ${sourceId}`);
   if (word.status !== 'draft' && !(word.sources || []).length) fail(`Reviewed word ${word.id} needs a source`);
+  if (word.familyHeadwordId && !wordIds.has(word.familyHeadwordId)) fail(`${word.id} references missing family headword ${word.familyHeadwordId}`);
+  if (word.etymology) {
+    if (!word.etymology.summaryKo?.trim()) fail(`${word.id} has an empty etymology summary`);
+    for (const sourceId of word.etymology.sourceIds || []) if (!sourceIds.has(sourceId)) fail(`${word.id} etymology references missing source ${sourceId}`);
+  }
+  for (const pronunciation of word.pronunciations || []) {
+    if (!pronunciation.ipa?.trim()) fail(`${word.id} has an empty pronunciation`);
+    if (pronunciation.sourceId && !sourceIds.has(pronunciation.sourceId)) fail(`${word.id} pronunciation references missing source ${pronunciation.sourceId}`);
+  }
 
   for (const meaning of word.meanings) {
     if (!meaning.ko?.length || !meaning.en?.length) fail(`Word sense ${meaning.id} needs bilingual glosses`);
@@ -79,6 +91,7 @@ for (const word of data.words) {
   }
 
   for (const relation of word.relations || []) {
+    if (!relationTypes.has(relation.type)) fail(`${word.id} has unsupported relation type ${relation.type}`);
     if (!wordIds.has(relation.targetWordId)) fail(`${word.id} references missing related word ${relation.targetWordId}`);
     if (relation.targetWordId === word.id) fail(`${word.id} has a self relation`);
     if (relation.type === 'inflection') fail(`${word.id} models an inflection as a relation; use forms instead`);

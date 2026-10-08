@@ -48,10 +48,11 @@ async function eachJsonLine(filePath, callback) {
 }
 
 const korean = new Map();
+const koreanByLemma = new Map();
 await eachJsonLine(koWiktionaryPath, (record) => {
   const pos = POS[record.pos];
   const lemma = normalize(record.word || '');
-  if (!pos || !isSingleEnglishWord(lemma)) return;
+  if (!isSingleEnglishWord(lemma)) return;
   const ko = [];
   for (const sense of record.senses || []) {
     for (const value of sense.glosses || []) {
@@ -61,6 +62,11 @@ await eachJsonLine(koWiktionaryPath, (record) => {
     if (ko.length >= 3) break;
   }
   if (!ko.length) return;
+  const lemmaKey = normalize(lemma).toLocaleLowerCase('en');
+  const lemmaItem = koreanByLemma.get(lemmaKey) || { lemma, ko: [] };
+  for (const gloss of ko) uniquePush(lemmaItem.ko, gloss, 3);
+  koreanByLemma.set(lemmaKey, lemmaItem);
+  if (!pos) return;
   const key = keyFor(lemma, pos);
   const item = korean.get(key) || { lemma, pos, ko: [] };
   for (const gloss of ko) uniquePush(item.ko, gloss, 3);
@@ -72,7 +78,8 @@ await eachJsonLine(simpleWiktionaryPath, (record) => {
   const pos = POS[record.pos];
   const lemma = normalize(record.word || '');
   const key = keyFor(lemma, pos);
-  if (!pos || !korean.has(key)) return;
+  const lemmaKey = normalize(lemma).toLocaleLowerCase('en');
+  if (!pos || (!korean.has(key) && !koreanByLemma.has(lemmaKey))) return;
   const item = simple.get(key) || { en: [], forms: [] };
   for (const sense of record.senses || []) {
     for (const value of sense.glosses || []) uniquePush(item.en, cleanGloss(value), 3);
@@ -96,6 +103,15 @@ await eachJsonLine(simpleWiktionaryPath, (record) => {
   simple.set(key, item);
 });
 
+function keyFromSenseReference(reference = '') {
+  const separator = reference.indexOf('%');
+  if (separator < 1) return null;
+  const lemma = reference.slice(0, separator).replaceAll('_', ' ');
+  const type = reference[separator + 1];
+  const pos = { 1: 'noun', 2: 'verb', 3: 'adjective', 4: 'adverb', 5: 'adjective' }[type];
+  return pos && isSingleEnglishWord(lemma) ? keyFor(lemma, pos) : null;
+}
+
 const oewn = new Map();
 const neededSynsets = new Set();
 const synsetOwners = new Map();
@@ -107,14 +123,23 @@ for (const fileName of entryFiles) {
     for (const [posCode, details] of Object.entries(byPos)) {
       const pos = OEWN_POS[posCode];
       const key = keyFor(lemma, pos);
-      if (!pos || !korean.has(key)) continue;
-      const item = oewn.get(key) || { lemma, pos, synsets: [], en: [] };
+      const lemmaKey = normalize(lemma).toLocaleLowerCase('en');
+      if (!pos || (!korean.has(key) && !koreanByLemma.has(lemmaKey))) continue;
+      const item = oewn.get(key) || { lemma, pos, synsets: [], en: [], pronunciations: [], derivationKeys: [] };
+      for (const pronunciation of details.pronunciation || []) {
+        if (!pronunciation.value || item.pronunciations.some((candidate) => candidate.ipa === pronunciation.value && candidate.variety === (pronunciation.variety || ''))) continue;
+        item.pronunciations.push({ ipa: pronunciation.value, variety: pronunciation.variety || '', sourceId: 'src-oewn' });
+      }
       for (const sense of details.sense || []) {
         if (sense.synset) {
           uniquePush(item.synsets, sense.synset, 5);
           neededSynsets.add(sense.synset);
           if (!synsetOwners.has(sense.synset)) synsetOwners.set(sense.synset, new Set());
           synsetOwners.get(sense.synset).add(key);
+        }
+        for (const reference of sense.derivation || []) {
+          const targetKey = keyFromSenseReference(reference);
+          if (targetKey) uniquePush(item.derivationKeys, targetKey);
         }
       }
       oewn.set(key, item);
@@ -138,12 +163,13 @@ for (const fileName of synsetFiles) {
 }
 
 const curated = JSON.parse(await readFile(curatedPath, 'utf8'));
-const curatedKeys = new Set(curated.words.map((word) => keyFor(word.lemma, word.partOfSpeech[0])));
+const curatedByKey = new Map(curated.words.map((word) => [keyFor(word.lemma, word.partOfSpeech[0]), word]));
+const curatedKeys = new Set(curatedByKey.keys());
 const usedIds = new Set(curated.words.map((word) => word.id));
 const candidates = [];
 for (const [key, oewnItem] of oewn) {
   if (curatedKeys.has(key) || !oewnItem.en.length) continue;
-  const koItem = korean.get(key);
+  const koItem = korean.get(key) || koreanByLemma.get(normalize(oewnItem.lemma).toLocaleLowerCase('en'));
   const simpleItem = simple.get(key);
   const lowercase = oewnItem.lemma === oewnItem.lemma.toLocaleLowerCase('en');
   const score = (simpleItem ? 1000 : 0) + (lowercase ? 100 : 0) + Math.max(0, 40 - oewnItem.lemma.length) + koItem.ko.length;
@@ -171,20 +197,57 @@ function createId(lemma, pos) {
   return id;
 }
 
-const words = candidates.slice(0, limit).map((item) => {
-  const id = createId(item.lemma, item.pos);
-  return {
-    id,
-    lemma: item.lemma,
-    partOfSpeech: [item.pos],
-    status: 'draft',
-    meanings: [{ id: `${id}-sense-1`, ko: item.ko, en: item.en, concepts: [] }],
-    forms: item.forms,
-    relations: [],
-    analyses: [],
-    sources: ['src-oewn', 'src-kowiktionary', ...(item.hasSimple ? ['src-simplewiktionary'] : [])],
-  };
-});
+const selected = candidates.slice(0, limit).map((item) => ({ ...item, id: createId(item.lemma, item.pos) }));
+const wordIdByKey = new Map([...curatedByKey].map(([key, word]) => [key, word.id]));
+for (const item of selected) wordIdByKey.set(item.key, item.id);
+
+const words = selected.map((item) => ({
+  id: item.id,
+  lemma: item.lemma,
+  partOfSpeech: [item.pos],
+  status: 'draft',
+  meanings: [{ id: `${item.id}-sense-1`, ko: item.ko, en: item.en, concepts: [] }],
+  forms: item.forms,
+  relations: item.derivationKeys
+    .map((targetKey) => wordIdByKey.get(targetKey))
+    .filter((targetId, index, ids) => targetId && targetId !== item.id && ids.indexOf(targetId) === index)
+    .map((targetWordId) => ({ type: 'related-family', targetWordId, transparency: 'semi-transparent', noteKo: 'OEWN 파생 연관 관계' })),
+  analyses: [],
+  pronunciations: item.pronunciations,
+  sources: ['src-oewn', 'src-kowiktionary', ...(item.hasSimple ? ['src-simplewiktionary'] : [])],
+}));
+
+const combinedWords = [...curated.words, ...words];
+const wordsById = new Map(combinedWords.map((word) => [word.id, word]));
+const adjacency = new Map(combinedWords.map((word) => [word.id, new Set()]));
+for (const word of combinedWords) {
+  for (const relation of word.relations || []) {
+    if (!['related-family', 'derived-from'].includes(relation.type) || !wordsById.has(relation.targetWordId)) continue;
+    adjacency.get(word.id).add(relation.targetWordId);
+    adjacency.get(relation.targetWordId).add(word.id);
+  }
+}
+const seenFamilyIds = new Set();
+const posPriority = { verb: 0, noun: 1, adjective: 2, adverb: 3 };
+for (const word of combinedWords) {
+  if (seenFamilyIds.has(word.id) || !adjacency.get(word.id)?.size) continue;
+  const component = [];
+  const pending = [word.id];
+  while (pending.length) {
+    const id = pending.pop();
+    if (seenFamilyIds.has(id)) continue;
+    seenFamilyIds.add(id);
+    component.push(wordsById.get(id));
+    for (const neighbor of adjacency.get(id) || []) if (!seenFamilyIds.has(neighbor)) pending.push(neighbor);
+  }
+  if (component.length < 2) continue;
+  const explicitHead = component.find((member) => member.familyHeadwordId === member.id);
+  const head = explicitHead || [...component].sort((left, right) =>
+    (posPriority[left.partOfSpeech[0]] ?? 9) - (posPriority[right.partOfSpeech[0]] ?? 9)
+    || left.lemma.length - right.lemma.length
+    || left.lemma.localeCompare(right.lemma, 'en'))[0];
+  for (const member of component) if (member.status === 'draft') member.familyHeadwordId = head.id;
+}
 
 const output = {
   meta: {
@@ -197,7 +260,7 @@ const output = {
       koreanWiktionary: 'Kaikki/Wiktextract raw dump',
       simpleWiktionary: 'Kaikki/Wiktextract raw dump',
     },
-    noteKo: 'OEWN 영문 정의와 한국어·Simple Wiktionary 구조화 덤프를 표제어와 품사 기준으로 결합한 자동 수집 데이터입니다.',
+    noteKo: 'OEWN 영문 정의·IPA 발음·파생 연관 관계와 한국어·Simple Wiktionary 구조화 덤프를 결합한 자동 수집 데이터입니다. 어원의 역사적 방향과 형태소 분석은 검수 데이터에서 별도로 관리합니다.',
   },
   words,
 };
